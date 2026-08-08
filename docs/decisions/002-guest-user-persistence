@@ -1,0 +1,26 @@
+# ADR-002: Guest User Persistence
+
+## Decision
+
+Guest users are stored as regular User records, just like Google-authenticated users.
+
+## Context
+
+The app need to support guest login while allowing guests to create and manage tasks.
+
+For guest login feature there are few options two of them are:
+
+1. Store guest user only in local storage
+2. Store guest user as actual user in DB
+
+## Reason
+
+- The main reason for choosing option 2 is that otherwise we would have two separate data flows based on the user's login type.
+
+- For guest user fetching logic will be in frontend and for google authenticated user logic will be in backend which is not a good architecture.
+
+- Also, storing the guests in DB allows thier tasks to persist across browser sessions as long as their authentication state is retained.
+
+## Note
+
+Guest accounts are not recoverable across devices because they don't have a permanent identity such as a Google account.
