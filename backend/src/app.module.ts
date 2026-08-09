@@ -12,7 +12,7 @@ import { PrismaModule } from './prisma/prisma.module';
       isGlobal: true,
     }),
     AuthModule,
-    PrismaModule
+    PrismaModule,
   ],
   controllers: [AppController],
   providers: [AppService],
