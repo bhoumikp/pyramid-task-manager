@@ -10,7 +10,34 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async loginAsGuest() {
+  async loginAsGuest(existingToken?: string) {
+    if (existingToken) {
+      try {
+        const payload = this.jwtService.verify<{ sub: string }>(existingToken);
+
+        const existingUser = await this.prisma.user.findUnique({
+          where: {
+            id: payload.sub,
+          },
+        });
+
+        if (existingUser?.authProvider === 'GUEST') {
+          return {
+            accessToken: existingToken,
+            user: {
+              id: existingUser.id,
+              name: existingUser.name,
+              username: existingUser.username,
+            },
+          };
+        }
+      } catch {
+        // Invalid or expired token.
+        // Treat the request as a new guest session.
+      }
+    }
+
+    // No token, invalid token, or token belongs to another user type.
     const user = await this.prisma.user.create({
       data: {
         name: 'Guest User',
