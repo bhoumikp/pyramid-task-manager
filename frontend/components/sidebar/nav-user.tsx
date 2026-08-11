@@ -39,7 +39,7 @@ export function NavUser({
   user: {
     name: string
     email: string
-    avatar: string
+    avatarUrl: string
   }
 }) {
   return (
@@ -55,7 +55,7 @@ export function NavUser({
             }
           >
             <Avatar className="h-8 w-8 rounded-lg">
-              <AvatarImage src={user.avatar} alt={user.name} />
+              <AvatarImage src={user.avatarUrl} alt={user.name} />
               <AvatarFallback className="rounded-full">CN</AvatarFallback>
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
@@ -72,7 +72,7 @@ export function NavUser({
             <DropdownMenuGroup>
 				<div className="container flex flex-col items-center gap-4 p-4">
 					<Avatar className="h-8 w-8 rounded-lg">
-						<AvatarImage src={user.avatar} alt={user.name} />
+						<AvatarImage src={user.avatarUrl} alt={user.name} />
 						<AvatarFallback className="rounded-full">CN</AvatarFallback>
 					</Avatar>
 					<div className="grid flex-1 text-xs font-medium text-center leading-4">

@@ -3,11 +3,11 @@ import { Sidebar, SidebarContent, SidebarHeader } from "../ui/sidebar";
 import { NavUser } from "./nav-user";
 import { NavMain } from "./nav-main";
 
-const user = {
-  name: "shadcn",
-  email: "m@example.com",
-  avatar: "/avatars/shadcn.jpg",
-}
+type SidebarUser = {
+  name: string;
+  email: string;
+  avatarUrl: string;
+};
 
 interface NavItem {
   title: string
@@ -31,7 +31,7 @@ const items: NavItem[] = [
 
 
 
-export function AppSidebar() {
+export function AppSidebar({user}: {user: SidebarUser}) {
 	return (
 		<Sidebar>
 			<SidebarHeader>

@@ -73,6 +73,22 @@ export class AuthService {
     };
   }
 
+  async getCurrentUser(userId: string) {
+    return this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        id: true,
+        name: true,
+        username: true,
+        email: true,
+        avatarUrl: true,
+        title: true,
+      },
+    });
+  }
+
   private generateGuestUsername(): string {
     return `guest-${randomUUID().slice(0, 6)}`;
   }

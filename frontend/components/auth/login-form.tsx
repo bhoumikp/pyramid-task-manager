@@ -10,20 +10,19 @@ import {
 import { Button } from "@/components/ui/button";
 import { PyramidLogo } from "../brand/pyramid-logo";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { loginAsGuest } from "@/lib/api";
 
 export function LoginForm() {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
   async function handleGuestLogin() {
     try {
       setIsLoading(true);
 
-      const result = await loginAsGuest();
-
-      console.log("Logged in:", result.user);
-
-      // Temporary — we'll redirect once the dashboard route exists.
+      await loginAsGuest();
+      router.push("/");
     } catch (error) {
       console.error("Guest login failed:", error);
     } finally {

@@ -12,3 +12,15 @@ export async function loginAsGuest() {
 
   return response.json();
 }
+
+export async function getCurrentUser() {
+  const response = await fetch(`${API_URL}/auth/me`, {
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    return null;
+  }
+
+  return response.json();
+}

@@ -10,6 +10,10 @@ type AuthenticatedUser = {
   userId: string;
 };
 
+type AuthCookies = {
+  access_token?: string;
+};
+
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -19,14 +23,13 @@ export class AuthController {
 
   @Post('guest')
   async loginAsGuest(
-    @Req() request: Request,  
+    @Req() request: Request,
     @Res({ passthrough: true }) response: Response,
   ) {
     const NODE_ENV = this.configService.getOrThrow<string>('NODE_ENV');
-    
-    const result = await this.authService.loginAsGuest(
-      request.cookies?.access_token
-    );
+
+    const cookies = request.cookies as AuthCookies;
+    const result = await this.authService.loginAsGuest(cookies.access_token);
 
     response.cookie('access_token', result.accessToken, {
       httpOnly: true,
@@ -42,7 +45,7 @@ export class AuthController {
 
   @Get('me')
   @UseGuards(JwtAuthGuard)
-  getCurrentUser(@CurrentUser() user: AuthenticatedUser): AuthenticatedUser {
-    return user;
+  getCurrentUser(@CurrentUser() user: AuthenticatedUser) {
+    return this.authService.getCurrentUser(user.userId);
   }
 }
