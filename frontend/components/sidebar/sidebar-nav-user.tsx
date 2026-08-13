@@ -33,13 +33,13 @@ import {
 } from "@/components/ui/sidebar"
 import Link from "next/link";
 
-export function NavUser({
+export function SidebarNavUser({
   user,
 }: {
   user: {
     name: string
-    email: string
-    avatarUrl: string
+    email?: string
+    avatarUrl?: string
   }
 }) {
   return (
@@ -70,7 +70,7 @@ export function NavUser({
             sideOffset={4}
           >
             <DropdownMenuGroup>
-				<div className="container flex flex-col items-center gap-4 p-4">
+				<div className="flex flex-col items-center gap-4 p-4">
 					<Avatar className="h-8 w-8 rounded-lg">
 						<AvatarImage src={user.avatarUrl} alt={user.name} />
 						<AvatarFallback className="rounded-full">CN</AvatarFallback>

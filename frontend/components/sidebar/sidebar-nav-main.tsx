@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/sidebar"
 import Link from "next/link"
 
-export function NavMain({
+export function SidebarNavMain({
   items,
 }: {
   items: {
@@ -36,7 +36,7 @@ export function NavMain({
 		<CollapsibleTrigger className={"w-full"}>
 	  		<SidebarGroupLabel className="flex cursor-pointer justify-between text-sm text-sidebar-foreground px-3">
 				Workspace
-				<ChevronDown className="transition-transform duration-200 group-data-[state=open]/collapsible:rotate-0" />
+				<ChevronDown className="size-4 transition-transform duration-200 group-not-data-open/collapsible:-rotate-90" />
 			</SidebarGroupLabel>
 			
 		</CollapsibleTrigger>
