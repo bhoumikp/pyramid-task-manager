@@ -8,10 +8,8 @@ import { TaskCol } from "./task-data";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { cn } from "@/lib/utils";
-import { Input } from "@base-ui/react";
 
-export function TaskColumn({ columnData, isDragging } : { columnData: TaskCol, isDragging?: boolean;
- }) {
+export function TaskColumn({ columnData, isDragging } : { columnData: TaskCol, isDragging?: boolean; }) {
 	const {
 		attributes,
 		listeners,

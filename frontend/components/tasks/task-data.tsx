@@ -1,6 +1,7 @@
 export type Task = {
   id: string;
   title: string;
+  priority?: string,
   assignee: {
     name: string;
     avatarUrl?: string;
@@ -27,7 +28,7 @@ export const taskCols : TaskCol[] = [
 					name: "Admin",
 					avatarUrl: "https://ui.shadcn.com/avatars/shadcn.jpg"
 				},
-				dueDate: "29 jul",
+				dueDate: "29 Sep 2025",
 				labels: ["deployment", "api", "documentaion", "REST API"]
 			},
 			{
@@ -36,7 +37,7 @@ export const taskCols : TaskCol[] = [
 				assignee: {
 					name: "Bhaumik",
 				},
-				dueDate: "29 jul",
+				dueDate: "29 Sep 2025",
 				labels: ["deployment", "api", "documentaion", "REST API"]
 			},
 			{
@@ -45,7 +46,7 @@ export const taskCols : TaskCol[] = [
 				assignee: {
 					name: "Bhaumik",
 				},
-				dueDate: "29 jul",
+				dueDate: "29 Sep 2025",
 				labels: ["deployment", "api", "documentaion", "REST API"]
 			},
 			{
@@ -54,7 +55,7 @@ export const taskCols : TaskCol[] = [
 				assignee: {
 					name: "Bhaumik",
 				},
-				dueDate: "29 jul",
+				dueDate: "29 Sep 2025",
 				labels: ["deployment", "api", "documentaion", "REST API"]
 			},
 			{
@@ -63,7 +64,7 @@ export const taskCols : TaskCol[] = [
 				assignee: {
 					name: "Bhaumik",
 				},
-				dueDate: "29 jul",
+				dueDate: "29 Sep 2025",
 				labels: ["deployment", "api", "documentaion", "REST API"]
 			},
 			{
@@ -72,7 +73,7 @@ export const taskCols : TaskCol[] = [
 				assignee: {
 					name: "Bhaumik",
 				},
-				dueDate: "29 jul",
+				dueDate: "29 Sep 2025",
 				labels: ["deployment", "api", "documentaion", "REST API"]
 			},
 			{
@@ -81,7 +82,7 @@ export const taskCols : TaskCol[] = [
 				assignee: {
 					name: "Bhaumik",
 				},
-				dueDate: "29 jul",
+				dueDate: "29 Sep 2025",
 				labels: ["deployment", "api", "documentaion", "REST API"]
 			}
 		]
