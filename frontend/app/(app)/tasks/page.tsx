@@ -1,7 +1,5 @@
-import { ClientOnly } from "@/components/client-only";
-import { TaskBoard } from "@/components/tasks/task-board";
 import { TaskHeader } from "@/components/tasks/task-header";
-import { TaskList } from "@/components/tasks/task-list";
+import { TaskContent } from "@/components/tasks/tasks-content";
 
 export default function TasksPage() {
   return (
@@ -12,9 +10,9 @@ export default function TasksPage() {
             <TaskBoard />
           </ClientOnly>
         </div> */}
-       <div className="min-h-0 flex-1 overflow-y-auto p-2 no-scrollbar">
-        <TaskList />
-       </div>
+       {/* <div className="min-h-0 flex-1 overflow-y-auto p-2 no-scrollbar"> */}
+          <TaskContent />
+       {/* </div> */}
     </main>
   );
 }

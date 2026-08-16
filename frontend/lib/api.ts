@@ -24,3 +24,15 @@ export async function getCurrentUser() {
 
   return response.json();
 }
+
+export async function getTasks() {
+  const response = await fetch(`${API_URL}/tasks`, {
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch tasks");
+  }
+
+  return response.json();
+}

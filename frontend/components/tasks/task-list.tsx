@@ -1,10 +1,10 @@
-import { taskCols } from "./task-data";
+import { TaskCol } from "@/lib/tasks";
 import { TaskTable } from "./task-table";
 
-export function TaskList() {
+export function TaskList({ columns } : { columns  :TaskCol[] }) {
 	return (
 		<div className="space-y-4">
-			{taskCols.map(column => <TaskTable key={column.id} table={column} /> )}
+			{columns.map(column => <TaskTable key={column.id} table={column} /> )}
 		</div>
 	)
 }

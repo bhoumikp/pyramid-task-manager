@@ -21,6 +21,9 @@ model User {
   updatedAt    DateTime     @updatedAt
 
   workspaceMemberships WorkspaceMember[]
+
+  createdTasks  Task[] @relation("TaskCreator")
+  assignedTasks Task[] @relation("TaskAssignee")
 }
 
 enum AuthProvider {
@@ -35,6 +38,7 @@ model Workspace {
   updatedAt DateTime @updatedAt
 
   members WorkspaceMember[]
+  tasks   Task[]
 }
 
 model WorkspaceMember {
@@ -48,4 +52,44 @@ model WorkspaceMember {
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
   @@unique([userId, workspaceId])
+}
+
+model Task {
+  id          String       @id @default(uuid())
+  title       String
+  description String?
+  status      TaskStatus   @default(TODO)
+  priority    TaskPriority @default(NONE)
+  startDate   DateTime?
+  dueDate     DateTime?
+
+  workspaceId String
+  createdById String
+  assigneeId  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  createdBy User      @relation("TaskCreator", fields: [createdById], references: [id])
+  assignee  User?     @relation("TaskAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId])
+  @@index([createdById])
+  @@index([assigneeId])
+}
+
+enum TaskStatus {
+  TODO
+  DOING
+  COMPLETED
+  ON_HOLD
+}
+
+enum TaskPriority {
+  NONE
+  URGENT
+  HIGH
+  MEDIUM
+  LOW
 }

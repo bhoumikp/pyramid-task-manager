@@ -4,7 +4,7 @@ import { Ellipsis, GripVertical, Plus } from "lucide-react";
 import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 import { Button } from "../ui/button";
 import { TaskCard } from "./task-card";
-import { TaskCol } from "./task-data";
+import { TaskCol } from "@/lib/tasks";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { cn } from "@/lib/utils";
@@ -19,7 +19,7 @@ export function TaskColumn({ columnData, isDragging } : { columnData: TaskCol, i
 	} = useSortable({
 		id: columnData.id,
 	});
-
+console.log(columnData);
 
 	return (
 		<Card 

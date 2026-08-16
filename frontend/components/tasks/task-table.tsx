@@ -1,4 +1,4 @@
-import { ChevronDown, Ellipsis, Plus } from "lucide-react";
+import { ChevronDown, Ellipsis, Plus, Signal } from "lucide-react";
 import {
   Collapsible,
   CollapsibleContent,
@@ -15,8 +15,8 @@ import {
 } from "../ui/table";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
-import { TaskCol } from "./task-data";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { formatTaskDate, Task, TaskCol } from "@/lib/tasks";
 
 export function TaskTable({ table }: { table: TaskCol }) {
   return (
@@ -50,7 +50,7 @@ export function TaskTable({ table }: { table: TaskCol }) {
             </TableHeader>
 
             <TableBody>
-              {table.tasks.map((task) => (
+              {table.tasks.map((task: Task) => (
                 <TableRow key={task.id}>
                   <TableCell className="max-w-0 px-3">
                     <span className="block truncate">
@@ -60,9 +60,10 @@ export function TaskTable({ table }: { table: TaskCol }) {
 
                   <TableCell>
                     {task.priority ? (
-                      <Badge variant="secondary">
-                        {task.priority}
-                      </Badge>
+                        <span className="flex gap-1 items-center text-xs">
+                          <Signal size={12} />
+                          {task.priority}
+                        </span>
                     ) : (
                       <span className="text-muted-foreground">
                         No priority
@@ -71,21 +72,25 @@ export function TaskTable({ table }: { table: TaskCol }) {
                   </TableCell>
 
                   <TableCell>
-                    <div className="flex items-center gap-2">
-                      	<Avatar className="h-8 w-8 rounded-lg">
-							<AvatarImage
-								src={task.assignee.avatarUrl ?? undefined}
-								alt={task.assignee.name}
-							/>
-							<AvatarFallback>
-								{task.assignee.name.slice(0, 2).toUpperCase()}
-							</AvatarFallback>
-						</Avatar>
-                    </div>
+                    {task.assignee && (
+                      <div className="flex items-center gap-2">
+                          <Avatar className="h-8 w-8 rounded-lg">
+                            <AvatarImage
+                              src={task.assignee.avatarUrl ?? undefined}
+                              alt={task.assignee.name}
+                            />
+                            <AvatarFallback>
+                              {task.assignee.name.slice(0, 2).toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                      </div>
+                    )}
                   </TableCell>
 
                   <TableCell>
-                    {task.dueDate || (
+                    {task.dueDate ? (
+                      formatTaskDate(task.dueDate)
+                    ) : (
                       <span className="text-muted-foreground">
                         No date
                       </span>

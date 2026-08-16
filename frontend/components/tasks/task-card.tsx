@@ -2,12 +2,13 @@ import { Calendar, Ellipsis, Tag } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Badge } from "../ui/badge";
-import { Task } from "./task-data";
+import { formatTaskDate, Task } from "@/lib/tasks";
 import { Button } from "../ui/button";
 
 export function TaskCard({taskData} : { taskData: Task}) {
-	const visibleLabels = taskData.labels.slice(0, 2);
-	const hiddenLabelsCount = taskData.labels.length - visibleLabels.length;
+	// const visibleLabels = taskData.labels.slice(0, 2);
+	// const hiddenLabelsCount = taskData.labels.length - visibleLabels.length;
+	const formattedDueDate = formatTaskDate(taskData.dueDate, "short");
 
 	return (
 		<Card className="min-w-0 rounded-lg gap-4">
@@ -19,29 +20,35 @@ export function TaskCard({taskData} : { taskData: Task}) {
 			<CardContent className="flex flex-col gap-3">
 				<div className="flex justify-between items-center">
 					<div className="flex min-w-0 items-center gap-1 font-medium">
-						<Avatar className="h-8 w-8 rounded-lg">
-							<AvatarImage
-								src={taskData.assignee.avatarUrl ?? undefined}
-								alt={taskData.assignee.name}
-							/>
-							<AvatarFallback>
-								{taskData.assignee.name.slice(0, 2).toUpperCase()}
-							</AvatarFallback>
-						</Avatar>
-						<span className="truncate">
-							{taskData.assignee.name}
-						</span>
+						{taskData.assignee && (
+							<>
+								<Avatar className="h-8 w-8 rounded-lg">
+									<AvatarImage
+										src={taskData.assignee.avatarUrl ?? undefined}
+										alt={taskData.assignee.name}
+									/>
+									<AvatarFallback>
+										{taskData.assignee.name.slice(0, 2).toUpperCase()}
+									</AvatarFallback>
+								</Avatar>
+								<span className="truncate">
+									{taskData.assignee.name}
+								</span>
+							</>
+						)}
 					</div>
-					<Badge variant={"destructive"}>
-						<Calendar />
-						{taskData.dueDate}
-					</Badge>
+					{formattedDueDate && (
+						<Badge variant="destructive">
+							<Calendar />
+							{formattedDueDate}
+						</Badge>
+					)}
 				</div>
-				<div className="flex flex-wrap gap-1.5">
+				{/* <div className="flex flex-wrap gap-1.5">
 					{visibleLabels.map(label => (
 						<Badge key={label} variant="secondary" className="text-xs">
-						<Tag />
-						{label}
+							<Tag />
+							{label}
 						</Badge>
 					))}
 
@@ -50,7 +57,7 @@ export function TaskCard({taskData} : { taskData: Task}) {
 						+{hiddenLabelsCount}
 						</Badge>
 					)}
-				</div>
+				</div> */}
 			</CardContent>
 		</Card>
 	)

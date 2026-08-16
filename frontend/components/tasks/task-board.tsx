@@ -2,13 +2,20 @@
 
 import { useState } from "react";
 import { TaskColumn } from "./task-column";
-import { taskCols } from "./task-data";
+import { TaskCol } from "@/lib/tasks";
 import { DndContext, DragEndEvent, DragOverlay } from "@dnd-kit/core";
 import { arrayMove, horizontalListSortingStrategy, SortableContext } from "@dnd-kit/sortable";
 
 
-export function TaskBoard() {
-	const [columns, setColumns] = useState(taskCols);
+type TaskBoardProps = {
+  columns: TaskCol[];
+  onColumnsChange: (columns: TaskCol[]) => void;
+};
+
+export function TaskBoard({
+	columns,
+	onColumnsChange,
+}: TaskBoardProps) {
 	const [activeColumnId, setActiveColumnId] = useState<string | null>(null);
 
 	function handleDragEnd(event: DragEndEvent) {
@@ -18,21 +25,19 @@ export function TaskBoard() {
 			return;
 		}
 
-		setColumns((current) => {
-			const oldIndex = current.findIndex(
+		const oldIndex = columns.findIndex(
 			(column) => column.id === active.id,
-			);
+		);
 
-			const newIndex = current.findIndex(
+		const newIndex = columns.findIndex(
 			(column) => column.id === over.id,
-			);
+		);
 
-			if (oldIndex === -1 || newIndex === -1) {
-			return current;
-			}
+		if (oldIndex === -1 || newIndex === -1) {
+			return;
+		}
 
-			return arrayMove(current, oldIndex, newIndex);
-		});
+		onColumnsChange(arrayMove(columns, oldIndex, newIndex));
 	}
 
 	return (
@@ -67,7 +72,7 @@ export function TaskBoard() {
 				 <div className="rotate-[1deg] opacity-95 shadow-lg">
 					<TaskColumn
 						columnData={columns.find(
-						(column) => column.id === activeColumnId,
+							(column) => column.id === activeColumnId,
 						)!}
 					/>
 				</div>
