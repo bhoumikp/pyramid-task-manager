@@ -5,8 +5,10 @@ import { groupTasksByStatus, TaskCol } from "@/lib/tasks";
 import { useEffect, useState } from "react";
 import { TaskList } from "./task-list";
 import { TaskBoard } from "./task-board";
+import { ClientOnly } from "../client-only";
+import { TaskView } from "./task-shell";
 
-export function TaskContent() {
+export function TaskContent({view} : { view: TaskView}) {
 	const [taskCols, setTaskCols] = useState<TaskCol[]>([]);
 	const [loading, setLoading] = useState(true);
 
@@ -36,8 +38,15 @@ export function TaskContent() {
 
 	return (
 		<div className="min-h-0 flex-1 overflow-y-auto p-2 no-scrollbar">
-			<TaskList columns={taskCols} />
-			{/* <TaskBoard columns={taskCols} onColumnsChange={setTaskCols} /> */}
+			{view==="list" ? (
+				<TaskList columns={taskCols} />
+			) : (
+				// <div className="flex min-h-0 flex-1 flex-col gap-4 p-2 overflow-hidden">
+					<ClientOnly>
+						<TaskBoard columns={taskCols} onColumnsChange={setTaskCols} />
+					</ClientOnly>
+				// </div>
+			)}
 		</div>
 	)
 }

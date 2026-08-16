@@ -4,12 +4,19 @@ import { Button } from "../ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { Checkbox } from "../ui/checkbox";
 import { Label } from "../ui/label";
+import { TaskView } from "../tasks/task-shell";
 
 interface AppFieldsDropdownProps {
   fields: string[];
+  view: TaskView;
+  onViewChange: (view: TaskView) => void;
 }
 
-export function AppFieldsDropdown({ fields } : AppFieldsDropdownProps) {
+export function AppFieldsDropdown({ fields, view, onViewChange } : AppFieldsDropdownProps) {
+	function isTaskView(value: string): value is TaskView {
+		return value === "board" || value === "list";
+	}
+
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger render={
@@ -29,10 +36,17 @@ export function AppFieldsDropdown({ fields } : AppFieldsDropdownProps) {
 			>
 				<DropdownMenuGroup className={"flex flex-col gap-4"}>
 					<ToggleGroup 
-						defaultValue={["board"]}
+						value={[view]}
 						variant={"outline"}
 						size={"lg"}
 						spacing={0}
+						onValueChange={(value) => {
+							const nextView = value[0];
+
+							if (nextView && isTaskView(nextView)) {
+								onViewChange(nextView);
+							}
+						}}
 					>
 						<ToggleGroupItem 
 							className={"cursor-pointer rounded-l-md rounded-r-none w-34 px-3"}

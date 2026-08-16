@@ -5,6 +5,8 @@ import { AppSearchBar } from "../app/app-search-bar";
 import { AppFieldsDropdown } from "../app/app-fields-dropdown";
 import { AppFilterDropdown } from "../app/app-filter-dropdwon";
 import { AppAddDialogue } from "../app/app-add-dialogue";
+import { Dispatch, SetStateAction } from "react";
+import { TaskView } from "./task-shell";
 
 const fields = ["Status", "Priority", "Members", "Due Date", "Labels", "Reporter"];
 
@@ -51,13 +53,13 @@ const filters: Filter[] = [
 	},
 ]
 
-export function TaskHeader() {
+export function TaskHeader({ view, onViewChange } : { view: TaskView, onViewChange: (view: TaskView) => void; }) {
 	return (
 		<div className="flex justify-between">
 			<span className="font-semibold">Tasks</span>
 			<div className="flex gap-2">
 				<AppSearchBar />	
-				<AppFieldsDropdown fields={fields}/>	
+				<AppFieldsDropdown fields={fields} view={view} onViewChange={onViewChange}/>	
 				<AppFilterDropdown filters={filters}/>
 				<AppAddDialogue />
 			</div>
