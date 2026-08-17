@@ -4,17 +4,20 @@ import { useState } from "react";
 import { TaskColumn } from "./task-column";
 import { TaskCol } from "@/lib/tasks";
 import { DndContext, DragEndEvent, DragOverlay } from "@dnd-kit/core";
-import { arrayMove, horizontalListSortingStrategy, SortableContext } from "@dnd-kit/sortable";
+import { horizontalListSortingStrategy, SortableContext } from "@dnd-kit/sortable";
 
 
 type TaskBoardProps = {
   columns: TaskCol[];
-  onColumnsChange: (columns: TaskCol[]) => void;
+  onColumnOrderChange: (
+    activeId: TaskCol["id"],
+    overId: TaskCol["id"],
+  ) => void;
 };
 
 export function TaskBoard({
 	columns,
-	onColumnsChange,
+	onColumnOrderChange,
 }: TaskBoardProps) {
 	const [activeColumnId, setActiveColumnId] = useState<string | null>(null);
 
@@ -25,19 +28,10 @@ export function TaskBoard({
 			return;
 		}
 
-		const oldIndex = columns.findIndex(
-			(column) => column.id === active.id,
+		onColumnOrderChange(
+			active.id as TaskCol["id"],
+			over.id as TaskCol["id"],
 		);
-
-		const newIndex = columns.findIndex(
-			(column) => column.id === over.id,
-		);
-
-		if (oldIndex === -1 || newIndex === -1) {
-			return;
-		}
-
-		onColumnsChange(arrayMove(columns, oldIndex, newIndex));
 	}
 
 	return (

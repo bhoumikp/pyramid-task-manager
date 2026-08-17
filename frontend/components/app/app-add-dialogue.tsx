@@ -10,24 +10,24 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Plus } from "lucide-react";
+import { TaskForm } from "../tasks/task-form";
+import { useState } from "react";
 
 export function AppAddDialogue() {
+	const [open, setOpen] = useState(false);
+
 	return (
-		<Dialog>
+		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger render={<Button size={"lg"} className={"text-xs"}><Plus /> Add Task</Button>} />
 			<DialogContent className="sm:max-w-md">
 				<DialogHeader>
 					<DialogTitle>Add Task</DialogTitle>
 					<DialogDescription>
+						Create a new task for this workspace.
 					</DialogDescription>
 				</DialogHeader>
-				<div className="flex items-center gap-2">
-					<div className="grid flex-1 gap-2">
-					</div>
-				</div>
-				<DialogFooter className="sm:justify-start">
-					<DialogClose render={<Button type="button">Close</Button>} />
-				</DialogFooter>
+				
+				<TaskForm onSuccess={() => setOpen(false)} />
 			</DialogContent>
 		</Dialog>
 	);

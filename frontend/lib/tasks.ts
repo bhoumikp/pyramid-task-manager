@@ -19,6 +19,22 @@ export type TaskCol = {
 	tasks: Task[];
 };
 
+export const taskPriorityLabels: Record<Task["priority"], string> = {
+  NONE: "No Priority",
+  URGENT: "Urgent",
+  HIGH: "High",
+  MEDIUM: "Medium",
+  LOW: "Low",
+};
+
+export type CreateTaskInput = {
+  title: string;
+  description?: string;
+  priority: "NONE" | "URGENT" | "HIGH" | "MEDIUM" | "LOW";
+  startDate?: string;
+  dueDate?: string;
+};
+
 const taskStatuses: {
 	id: Task["status"];
 	title: string;
