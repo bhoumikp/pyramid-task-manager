@@ -1,12 +1,17 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "../ui/input-group";
 import { Button } from "../ui/button";
 import { Kbd } from "../ui/kbd";
 import { Search } from "lucide-react";
 
-export function AppSearchBar() {
+export function AppSearchBar({
+	value,
+	onValueChange,
+}: {
+	value: string;
+	onValueChange: (value: string) => void;
+}) {
 	const [open, setOpen] = useState(false);
-	const [value, setValue] = useState("");
 	const [keyType, setKeyType] = useState("");
 	const inputRef = useRef<HTMLInputElement>(null);
 	const closeTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -28,11 +33,11 @@ export function AppSearchBar() {
 		}
 	};
 
-	const closeSearch = () => {
+	const closeSearch = useCallback(() => {
 		setOpen(false);
-		setValue("");
+		onValueChange("");
 		inputRef.current?.blur();
-	};
+	}, [onValueChange]);
 
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
@@ -42,14 +47,14 @@ export function AppSearchBar() {
 			if (isModF) {
 				e.preventDefault();
 				setOpen((prev) => {
-				const next = !prev;
-				if (next) {
-					setTimeout(() => inputRef.current?.focus(), 10);
-				} else {
-					setValue("");
-					inputRef.current?.blur();
-				}
-				return next;
+					const next = !prev;
+					if (next) {
+						setTimeout(() => inputRef.current?.focus(), 10);
+					} else {
+						onValueChange("");
+						inputRef.current?.blur();
+					}
+					return next;
 				});
 			}
 
@@ -60,19 +65,19 @@ export function AppSearchBar() {
 
 		window.addEventListener("keydown", handleKeyDown);
 		return () => window.removeEventListener("keydown", handleKeyDown);
-	}, [open]);
+	}, [closeSearch, onValueChange, open]);
 
 	return (
 		<>
 			<InputGroup 
-				className={`max-w-xs rounded h-full -mr-10 z-1 overflow-hidden transition-all duration-300 ease-in-out  ${
+				className={`max-w-xs rounded h-full -mr-10 z-1 overflow-hidden transition-all duration-300 ease-in-out ${
 					open ? "opacity-100 " : "opacity-0 "
 				}`}
 			>
 				<InputGroupInput
 					ref={inputRef}
 					value={value}
-					onChange={(e) => setValue(e.target.value)}
+					onChange={(e) => onValueChange(e.target.value)}
 					onBlur={handleBlur}
 					className="text-accent-foreground" 
 					placeholder="Search..." 
@@ -87,10 +92,10 @@ export function AppSearchBar() {
 
 			<Button 
 				variant={"outline"} 
-				size={"icon-lg"}
+				// size={"icon-lg"}
 				onClick={openSearch}
 				onMouseEnter={handleMouseEnter}
-				className={`px-3 rounded z-2 transition-all duration-300 ease-in-out ${open ? "opacity-0": "opacity-100"}`}>
+				className={`px-2 rounded z-2 transition-all duration-300 ease-in-out ${open ? "opacity-0": "opacity-100"}`}>
 					<Search/>
 			</Button>
 		</>

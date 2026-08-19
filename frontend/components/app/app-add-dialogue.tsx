@@ -1,10 +1,8 @@
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -18,7 +16,7 @@ export function AppAddDialogue() {
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
-			<DialogTrigger render={<Button size={"lg"} className={"text-xs"}><Plus /> Add Task</Button>} />
+			<DialogTrigger render={<Button className={"text-xs"}><Plus /> Add Task</Button>} />
 			<DialogContent className="sm:max-w-md">
 				<DialogHeader>
 					<DialogTitle>Add Task</DialogTitle>

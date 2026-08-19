@@ -1,8 +1,7 @@
 "use client";
 
-import { getTasks } from "@/lib/api";
-import { groupTasksByStatus, Task, TaskCol } from "@/lib/tasks";
-import { useEffect, useState } from "react";
+import { groupTasksByStatus, TaskCol } from "@/lib/tasks";
+import { useState } from "react";
 import { TaskList } from "./task-list";
 import { TaskBoard } from "./task-board";
 import { ClientOnly } from "../client-only";
@@ -11,8 +10,22 @@ import { useTasks } from "@/hooks/use-tasks";
 import { arrayMove } from "@dnd-kit/sortable";
 
 export function TaskContent({view} : { view: TaskView}) {
-	const { tasks, loading } = useTasks();
-	const taskCols = groupTasksByStatus(tasks);
+	const { tasks, loading, search, priorityFilters, visibleFields } = useTasks();
+	const filteredTasks = tasks.filter((task) => {
+		const query = search.trim().toLowerCase();
+		const matchesSearch =
+			query.length === 0 ||
+			task.title.toLowerCase().includes(query) ||
+			(task.description ?? "").toLowerCase().includes(query) ||
+			(task.assignee?.name ?? "").toLowerCase().includes(query);
+
+		const matchesPriority =
+			priorityFilters.length === 0 ||
+			priorityFilters.includes(task.priority);
+
+		return matchesSearch && matchesPriority;
+	});
+	const taskCols = groupTasksByStatus(filteredTasks);
 	const [columnOrder, setColumnOrder] = useState<TaskCol["id"][]>([
 		"TODO",
 		"DOING",
@@ -34,29 +47,28 @@ export function TaskContent({view} : { view: TaskView}) {
 	}
 
 	return (
-		<div className="min-h-0 flex-1 overflow-y-auto p-2 no-scrollbar">
+		<div className={`min-h-0 flex-1 ${view === "list" ? "overflow-y-auto" : "overflow-hidden"}`}>
 			{view==="list" ? (
-				<TaskList columns={taskCols} />
+				<TaskList columns={taskCols} visibleFields={visibleFields} />
 			) : (
-				// <div className="flex min-h-0 flex-1 flex-col gap-4 p-2 overflow-hidden">
-					<ClientOnly>
-						<TaskBoard 
-							columns={orderedColumns} 
-							onColumnOrderChange={(activeId, overId) => {
-								setColumnOrder((currentOrder) => {
-									const oldIndex = currentOrder.indexOf(activeId);
-									const newIndex = currentOrder.indexOf(overId);
+				<ClientOnly>
+					<TaskBoard 
+						columns={orderedColumns} 
+						visibleFields={visibleFields}
+						onColumnOrderChange={(activeId, overId) => {
+							setColumnOrder((currentOrder) => {
+								const oldIndex = currentOrder.indexOf(activeId);
+								const newIndex = currentOrder.indexOf(overId);
 
-									if (oldIndex === -1 || newIndex === -1) {
-										return currentOrder;
-									}
+								if (oldIndex === -1 || newIndex === -1) {
+									return currentOrder;
+								}
 
-									return arrayMove(currentOrder, oldIndex, newIndex);
-								});
-							}}
-						/>
-					</ClientOnly>
-				// </div>
+								return arrayMove(currentOrder, oldIndex, newIndex);
+							});
+						}}
+					/>
+				</ClientOnly>
 			)}
 		</div>
 	)

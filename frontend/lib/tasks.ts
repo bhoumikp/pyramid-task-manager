@@ -11,6 +11,11 @@ export type Task = {
 		name: string;
 		avatarUrl: string | null;
 	} | null;
+	createdBy: {
+		id: string,
+		name: string,
+		avatarUrl: string | null,
+	},
 };
 
 export type TaskCol = {
@@ -19,23 +24,58 @@ export type TaskCol = {
 	tasks: Task[];
 };
 
-export const taskPriorityLabels: Record<Task["priority"], string> = {
-  NONE: "No Priority",
-  URGENT: "Urgent",
-  HIGH: "High",
-  MEDIUM: "Medium",
-  LOW: "Low",
-};
+export type TaskField =
+	| "status"
+	| "priority"
+	| "members"
+	| "dueDate"
+	| "labels"
+	| "reporter";
+
+export type TaskFieldState = Record<TaskField, boolean>;
 
 export type CreateTaskInput = {
-  title: string;
-  description?: string;
-  priority: "NONE" | "URGENT" | "HIGH" | "MEDIUM" | "LOW";
-  startDate?: string;
-  dueDate?: string;
+	title: string;
+	description?: string;
+	priority: "NONE" | "URGENT" | "HIGH" | "MEDIUM" | "LOW";
+	startDate?: string;
+	dueDate?: string;
 };
 
-const taskStatuses: {
+export const taskPriorityLabels: Record<Task["priority"], string> = {
+	NONE: "No Priority",
+	URGENT: "Urgent",
+	HIGH: "High",
+	MEDIUM: "Medium",
+	LOW: "Low",
+};
+
+export const taskStatusLabels: Record<Task["status"], string> = {
+  TODO: "To Do",
+  DOING: "Doing",
+  COMPLETED: "Completed",
+  ON_HOLD: "On Hold",
+};
+
+export const taskFieldLabels: Record<TaskField, string> = {
+	status: "Status",
+	priority: "Priority",
+	members: "Members",
+	dueDate: "Due Date",
+	labels: "Labels",
+	reporter: "Reporter",
+};
+
+export const defaultTaskFields: TaskFieldState = {
+	status: true,
+	priority: true,
+	members: true,
+	dueDate: true,
+	labels: true,
+	reporter: true,
+};
+
+export const taskStatuses: {
 	id: Task["status"];
 	title: string;
 }[] = [
@@ -53,8 +93,8 @@ export function groupTasksByStatus(tasks: Task[]): TaskCol[] {
 }
 
 export function formatTaskDate(
-  date: string | null,
-  format: "short" | "long" = "long",
+	date: string | null,
+	format: "short" | "long" = "long",
 ) {
 	if (!date) return null;
 

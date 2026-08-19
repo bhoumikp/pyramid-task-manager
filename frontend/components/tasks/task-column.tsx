@@ -4,12 +4,20 @@ import { Ellipsis, GripVertical, Plus } from "lucide-react";
 import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 import { Button } from "../ui/button";
 import { TaskCard } from "./task-card";
-import { TaskCol } from "@/lib/tasks";
+import { TaskCol, TaskFieldState } from "@/lib/tasks";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { cn } from "@/lib/utils";
 
-export function TaskColumn({ columnData, isDragging } : { columnData: TaskCol, isDragging?: boolean; }) {
+export function TaskColumn({
+	columnData,
+	visibleFields,
+	isDragging,
+} : {
+	columnData: TaskCol,
+	visibleFields: TaskFieldState;
+	isDragging?: boolean;
+}) {
 	const {
 		attributes,
 		listeners,
@@ -19,7 +27,6 @@ export function TaskColumn({ columnData, isDragging } : { columnData: TaskCol, i
 	} = useSortable({
 		id: columnData.id,
 	});
-console.log(columnData);
 
 	return (
 		<Card 
@@ -49,10 +56,10 @@ console.log(columnData);
 				</div>
 			</CardHeader>
 
-			<CardContent className="min-h-0 flex-1 overflow-y-auto px-2 py-1 space-y-2 no-scrollbar">
+			<CardContent className="min-h-0 flex-1 overflow-y-auto px-2 py-1 space-y-2">
 				{columnData.tasks.length > 0 ? (
 					columnData.tasks.map((task) => (
-						<TaskCard key={task.id} taskData={task} />
+						<TaskCard key={task.id} taskData={task} visibleFields={visibleFields} />
 					))
 					) : (
 					<span className="text-center text-muted-foreground font-normal inline-block w-full py-4">

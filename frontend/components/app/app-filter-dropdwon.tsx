@@ -12,12 +12,14 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Task } from "@/lib/tasks";
 
 interface Filters {
 	label: string,
 	icon: LucideIcon,
 	items: {
 		label: string,
+		value: Task["priority"],
 		icon: LucideIcon,
 		color?: string
 	}[]
@@ -25,13 +27,19 @@ interface Filters {
 
 interface AppFilter {
   filters: Filters[];
+  priorityFilters: Task["priority"][];
+  onPriorityFilterToggle: (priority: Task["priority"]) => void;
 }
 
-export function AppFilterDropdown({ filters } : AppFilter) {
+export function AppFilterDropdown({
+	filters,
+	priorityFilters,
+	onPriorityFilterToggle,
+} : AppFilter) {
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger render={
-				<Button variant={"outline"} size={"icon-lg"} className={"rounded text-xs"}><Funnel /></Button>
+				<Button variant={"outline"}  className={"px-2 rounded text-xs"}><Funnel /></Button>
 			}></DropdownMenuTrigger>
 
 			<DropdownMenuContent 
@@ -59,6 +67,8 @@ export function AppFilterDropdown({ filters } : AppFilter) {
 												<DropdownMenuCheckboxItem 
 													key={itemIndex} 
 													className={`py-2 pr-8 pl-3 gap-2.5 ${item.color ? "text-"+item.color: ""}`}
+													checked={priorityFilters.includes(item.value)}
+													onCheckedChange={() => onPriorityFilterToggle(item.value)}
 												>
 													<item.icon />
 													{item.label}

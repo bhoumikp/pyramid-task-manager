@@ -5,14 +5,23 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuTrigg
 import { Checkbox } from "../ui/checkbox";
 import { Label } from "../ui/label";
 import { TaskView } from "../tasks/task-shell";
+import { taskFieldLabels, TaskField, TaskFieldState } from "@/lib/tasks";
 
 interface AppFieldsDropdownProps {
-  fields: string[];
+  fields: TaskField[];
+  visibleFields: TaskFieldState;
   view: TaskView;
   onViewChange: (view: TaskView) => void;
+  onFieldToggle: (field: TaskField) => void;
 }
 
-export function AppFieldsDropdown({ fields, view, onViewChange } : AppFieldsDropdownProps) {
+export function AppFieldsDropdown({
+	fields,
+	visibleFields,
+	view,
+	onViewChange,
+	onFieldToggle,
+} : AppFieldsDropdownProps) {
 	function isTaskView(value: string): value is TaskView {
 		return value === "board" || value === "list";
 	}
@@ -22,7 +31,7 @@ export function AppFieldsDropdown({ fields, view, onViewChange } : AppFieldsDrop
 			<DropdownMenuTrigger render={
 				<Button
 					variant={"outline"} 
-					size={"lg"}
+					// size={"lg"}
 					className={"rounded text-xs"}
 				>
 					<Columns3 /> 
@@ -66,11 +75,15 @@ export function AppFieldsDropdown({ fields, view, onViewChange } : AppFieldsDrop
 						</ToggleGroupItem>
 					</ToggleGroup>
 
-					<ul >
-						{fields.map((field, index) => (
-							<li key={index} className="flex justify-between items-center min-h-8">
-								<Label className="text-xs" htmlFor={String(index)}>{field}</Label>
-								<Checkbox id={String(index)} checked/>
+					<ul>
+						{fields.map((field) => (
+							<li key={field} className="flex justify-between items-center min-h-8">
+								<Label className="text-xs" htmlFor={field}>{taskFieldLabels[field]}</Label>
+								<Checkbox
+									id={field}
+									checked={visibleFields[field]}
+									onCheckedChange={() => onFieldToggle(field)}
+								/>
 							</li>
 						))}
 					</ul>

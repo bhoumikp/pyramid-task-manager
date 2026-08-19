@@ -14,11 +14,23 @@ import {
   TableRow,
 } from "../ui/table";
 import { Button } from "../ui/button";
-import { Badge } from "../ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { formatTaskDate, Task, TaskCol } from "@/lib/tasks";
+import { formatTaskDate, Task, TaskCol, TaskFieldState } from "@/lib/tasks";
 
-export function TaskTable({ table }: { table: TaskCol }) {
+export function TaskTable({
+  table,
+  visibleFields,
+}: {
+  table: TaskCol;
+  visibleFields: TaskFieldState;
+}) {
+  const footerColSpan =
+    2 +
+    Number(visibleFields.priority) +
+    Number(visibleFields.members) +
+    Number(visibleFields.dueDate) +
+    Number(visibleFields.reporter);
+
   return (
     <Collapsible
       className="group/collapsible space-y-4"
@@ -42,9 +54,10 @@ export function TaskTable({ table }: { table: TaskCol }) {
                 <TableHead className="w-[45%] min-w-[200px] px-3">
                   Task
                 </TableHead>
-                <TableHead>Priority</TableHead>
-                <TableHead>Members</TableHead>
-                <TableHead>Due Date</TableHead>
+                {visibleFields.priority && <TableHead>Priority</TableHead>}
+                {visibleFields.members && <TableHead>Members</TableHead>}
+                {visibleFields.dueDate && <TableHead>Due Date</TableHead>}
+                {visibleFields.reporter && <TableHead>Reporter</TableHead>}
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -58,22 +71,25 @@ export function TaskTable({ table }: { table: TaskCol }) {
                     </span>
                   </TableCell>
 
-                  <TableCell>
-                    {task.priority ? (
+                  {visibleFields.priority && (
+                    <TableCell>
+                      {task.priority !== "NONE" ? (
                         <span className="flex gap-1 items-center text-xs">
                           <Signal size={12} />
                           {task.priority}
                         </span>
-                    ) : (
-                      <span className="text-muted-foreground">
-                        No priority
-                      </span>
-                    )}
-                  </TableCell>
+                      ) : (
+                        <span className="text-muted-foreground">
+                          No priority
+                        </span>
+                      )}
+                    </TableCell>
+                  )}
 
-                  <TableCell>
-                    {task.assignee && (
-                      <div className="flex items-center gap-2">
+                  {visibleFields.members && (
+                    <TableCell>
+                      {task.assignee ? (
+                        <div className="flex items-center gap-2">
                           <Avatar className="h-8 w-8 rounded-lg">
                             <AvatarImage
                               src={task.assignee.avatarUrl ?? undefined}
@@ -83,19 +99,38 @@ export function TaskTable({ table }: { table: TaskCol }) {
                               {task.assignee.name.slice(0, 2).toUpperCase()}
                             </AvatarFallback>
                           </Avatar>
-                      </div>
-                    )}
-                  </TableCell>
+                        </div>
+                      ) : (
+                        <span className="text-muted-foreground">
+                          Unassigned
+                        </span>
+                      )}
+                    </TableCell>
+                  )}
 
-                  <TableCell>
-                    {task.dueDate ? (
-                      formatTaskDate(task.dueDate)
-                    ) : (
-                      <span className="text-muted-foreground">
-                        No date
-                      </span>
-                    )}
-                  </TableCell>
+                  {visibleFields.dueDate && (
+                    <TableCell>
+                      {task.dueDate ? (
+                        formatTaskDate(task.dueDate)
+                      ) : (
+                        <span className="text-muted-foreground">
+                          No date
+                        </span>
+                      )}
+                    </TableCell>
+                  )}
+
+                  {visibleFields.reporter && (
+                    <TableCell>
+                      {task.createdBy ? (
+                        <span>{task.createdBy.name}</span>
+                      ) : (
+                        <span className="text-muted-foreground">
+                          Unknown
+                        </span>
+                      )}
+                    </TableCell>
+                  )}
 
                   <TableCell className="text-right">
                     <Button
@@ -112,7 +147,7 @@ export function TaskTable({ table }: { table: TaskCol }) {
 
             <TableFooter className="bg-background">
               <TableRow>
-                <TableCell colSpan={5}>
+                <TableCell colSpan={footerColSpan}>
                   <Button
                     variant="ghost"
                     size="xs"

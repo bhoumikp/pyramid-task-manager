@@ -32,6 +32,8 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import Link from "next/link";
+import { useTheme } from "next-themes";
+import { Accent, useAccent } from "../providers/accent-provider";
 
 export function SidebarNavUser({
   user,
@@ -42,6 +44,9 @@ export function SidebarNavUser({
     avatarUrl?: string
   }
 }) {
+  const { theme, setTheme } = useTheme();
+  const { accent, setAccent } = useAccent();
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -95,7 +100,10 @@ export function SidebarNavUser({
 									<DropdownMenuLabel className={"py-2.5 px-3"}>
 										Theme
 									</DropdownMenuLabel>
-									<DropdownMenuRadioGroup>
+									<DropdownMenuRadioGroup
+                    value={theme}
+                    onValueChange={setTheme}
+                  >
 										<DropdownMenuRadioItem 
 											className={"py-2.5 px-3 gap-2.5"}
 											value="light"
@@ -129,7 +137,10 @@ export function SidebarNavUser({
 									<DropdownMenuLabel className={"py-2.5 px-3"}>
 										Color Mode
 									</DropdownMenuLabel>
-									<DropdownMenuRadioGroup>
+									<DropdownMenuRadioGroup
+                    value={accent}
+                    onValueChange={(value) => setAccent(value as Accent)}
+                  >
 										<DropdownMenuRadioItem 
 											className={"py-2.5 px-3 gap-2.5"}
 											value="amber"

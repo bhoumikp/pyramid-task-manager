@@ -3,10 +3,11 @@
 import {
   createContext,
   useContext,
+  useEffect,
   useSyncExternalStore,
 } from "react";
 
-type Accent =
+export type Accent =
   | "amber"
   | "blue"
   | "pink"
@@ -70,6 +71,10 @@ export function AccentProvider({
     document.documentElement.dataset.accent = value;
     window.dispatchEvent(new Event("storage"));
   }
+
+  useEffect(() => {
+    document.documentElement.dataset.accent = accent;
+  }, [accent]);
 
   return (
     <AccentContext.Provider value={{ accent, setAccent }}>

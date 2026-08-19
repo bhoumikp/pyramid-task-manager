@@ -2,9 +2,11 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-/* @custom-variant dark (&:is(.dark *)); */
+@custom-variant dark (&:is(.dark *));
 
 :root {
+  --font-inter: ui-sans-serif, system-ui, sans-serif;
+  --font-geist-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
 
@@ -176,6 +178,26 @@
     @apply border-border outline-ring/50;
   }
 
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: color-mix(in oklch, var(--foreground) 24%, transparent);
+    border: 3px solid transparent;
+    border-radius: 9999px;
+    background-clip: content-box;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background-color: color-mix(in oklch, var(--foreground) 34%, transparent);
+  }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -183,13 +205,13 @@
   html {
     @apply font-sans;
   }
-}
 
-.no-scrollbar {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
 
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
 }
