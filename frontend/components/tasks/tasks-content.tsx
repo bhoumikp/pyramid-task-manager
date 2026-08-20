@@ -8,6 +8,7 @@ import { ClientOnly } from "../client-only";
 import { TaskView } from "./task-shell";
 import { useTasks } from "@/hooks/use-tasks";
 import { arrayMove } from "@dnd-kit/sortable";
+import { Skeleton } from "../ui/skeleton";
 
 function matchesDueDateFilter(dueDateStr: string | null | undefined, filterKeys: string[]): boolean {
 	if (filterKeys.length === 0) return true;
@@ -30,7 +31,7 @@ function matchesDueDateFilter(dueDateStr: string | null | undefined, filterKeys:
 	});
 }
 
-export function TaskContent({view} : { view: TaskView}) {
+export function TaskContent({ view }: { view: TaskView }) {
 	const {
 		tasks,
 		loading,
@@ -101,20 +102,21 @@ export function TaskContent({view} : { view: TaskView}) {
 
 	if (loading) {
 		return (
-			<div className="flex flex-1 items-center justify-center">
-				Loading tasks...
+			<div className="flex h-full min-h-0 flex-col p-4 gap-4">
+				<Skeleton className="h-8 w-48 rounded-md" />
+				<Skeleton className="h-64 w-full rounded-md" />
 			</div>
 		);
 	}
 
 	return (
 		<div className={`min-h-0 flex-1 ${view === "list" ? "overflow-y-auto" : "overflow-hidden"}`}>
-			{view==="list" ? (
+			{view === "list" ? (
 				<TaskList columns={taskCols} visibleFields={visibleFields} />
 			) : (
 				<ClientOnly>
-					<TaskBoard 
-						columns={orderedColumns} 
+					<TaskBoard
+						columns={orderedColumns}
 						visibleFields={visibleFields}
 						onColumnOrderChange={(activeId, overId) => {
 							setColumnOrder((currentOrder) => {

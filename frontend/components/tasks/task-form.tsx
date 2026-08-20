@@ -283,7 +283,6 @@ export function TaskForm({
 									<FieldLabel>Start Date</FieldLabel>
 									<Popover>
 										<PopoverTrigger
-											nativeButton={false}
 											render={
 												<Button
 													variant="outline"
@@ -325,11 +324,10 @@ export function TaskForm({
 									<FieldLabel>Due Date</FieldLabel>
 									<Popover>
 										<PopoverTrigger
-											nativeButton={false}
 											render={
 												<Button
 													variant="outline"
-													className="w-full justify-start text-left font-normal px-2.5 text-xs cursor-pointer"
+													className="w-full justify-start text-left font-normal px-2.5 text-sm cursor-pointer"
 													aria-invalid={fieldState.invalid}
 												>
 													<CalendarIcon className="size-3.5 shrink-0" />

@@ -28,6 +28,8 @@ model User {
   assignedSubtasks Subtask[]      @relation("SubtaskAssignee")
   comments         Comment[]
   taskActivities   TaskActivity[]
+  createdProjects  Project[]      @relation("ProjectCreator")
+  ledProjects      Project[]      @relation("ProjectLead")
 }
 
 enum AuthProvider {
@@ -41,8 +43,9 @@ model Workspace {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  members WorkspaceMember[]
-  tasks   Task[]
+  members  WorkspaceMember[]
+  tasks    Task[]
+  projects Project[]
 }
 
 model WorkspaceMember {
@@ -56,6 +59,32 @@ model WorkspaceMember {
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
   @@unique([userId, workspaceId])
+}
+
+model Project {
+  id          String        @id @default(uuid())
+  title       String
+  description String?
+  status      ProjectStatus @default(PLANNING)
+  priority    TaskPriority  @default(NONE)
+  startDate   DateTime?
+  dueDate     DateTime?
+
+  workspaceId String
+  createdById String
+  leadId      String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  createdBy User      @relation("ProjectCreator", fields: [createdById], references: [id])
+  lead      User?     @relation("ProjectLead", fields: [leadId], references: [id], onDelete: SetNull)
+  tasks     Task[]
+
+  @@index([workspaceId])
+  @@index([createdById])
+  @@index([leadId])
 }
 
 model Task {
@@ -72,6 +101,7 @@ model Task {
   workspaceId String
   createdById String
   assigneeId  String?
+  projectId   String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -79,6 +109,7 @@ model Task {
   workspace  Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   createdBy  User           @relation("TaskCreator", fields: [createdById], references: [id])
   assignee   User?          @relation("TaskAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+  project    Project?       @relation(fields: [projectId], references: [id], onDelete: SetNull)
   watchers   User[]         @relation("TaskWatchers")
   subtasks   Subtask[]
   comments   Comment[]
@@ -87,6 +118,7 @@ model Task {
   @@index([workspaceId])
   @@index([createdById])
   @@index([assigneeId])
+  @@index([projectId])
 }
 
 model Subtask {
@@ -139,6 +171,13 @@ model TaskActivity {
 
   @@index([taskId])
   @@index([actorId])
+}
+
+enum ProjectStatus {
+  PLANNING
+  IN_PROGRESS
+  COMPLETED
+  ON_HOLD
 }
 
 enum TaskStatus {

@@ -195,3 +195,60 @@ export async function getWorkspaceMembers(): Promise<UserSummary[]> {
 
 	return response.json();
 }
+
+export async function getProjects() {
+	const response = await fetch(`${API_URL}/projects`, {
+		credentials: "include",
+	});
+
+	if (!response.ok) {
+		throw new Error("Failed to fetch projects");
+	}
+
+	return response.json();
+}
+
+export async function createProjectApi(data: any) {
+	const response = await fetch(`${API_URL}/projects`, {
+		method: "POST",
+		credentials: "include",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(data),
+	});
+
+	if (!response.ok) {
+		throw new Error("Failed to create project");
+	}
+
+	return response.json();
+}
+
+export async function updateProjectApi(projectId: string, data: any) {
+	const response = await fetch(`${API_URL}/projects/${projectId}`, {
+		method: "PATCH",
+		credentials: "include",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(data),
+	});
+
+	if (!response.ok) {
+		throw new Error("Failed to update project");
+	}
+
+	return response.json();
+}
+
+export async function deleteProjectApi(projectId: string): Promise<void> {
+	const response = await fetch(`${API_URL}/projects/${projectId}`, {
+		method: "DELETE",
+		credentials: "include",
+	});
+
+	if (!response.ok) {
+		throw new Error("Failed to delete project");
+	}
+}

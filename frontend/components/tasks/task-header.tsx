@@ -11,8 +11,8 @@ import { useTasks } from "@/hooks/use-tasks";
 const fields: TaskField[] = ["status", "priority", "members", "dueDate", "labels", "reporter"];
 
 export function TaskHeader(
-	{ view, onViewChange } : 
-	{ view: TaskView, onViewChange: (view: TaskView) => void; }
+	{ view, onViewChange, title } : 
+	{ view: TaskView; onViewChange: (view: TaskView) => void; title?: string }
 ) {
 	const {
 		search,
@@ -22,8 +22,8 @@ export function TaskHeader(
 	} = useTasks();
 
 	return (
-		<div className="flex justify-between">
-			<span className="font-semibold">Tasks</span>
+		<div className="flex justify-between items-center">
+			<span className="font-semibold">{title ?? "Tasks"}</span>
 			<div className="flex gap-2">
 				<AppSearchBar
 					value={search}

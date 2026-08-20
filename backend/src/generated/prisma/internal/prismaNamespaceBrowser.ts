@@ -54,6 +54,7 @@ export const ModelName = {
   User: 'User',
   Workspace: 'Workspace',
   WorkspaceMember: 'WorkspaceMember',
+  Project: 'Project',
   Task: 'Task',
   Subtask: 'Subtask',
   Comment: 'Comment',
@@ -113,6 +114,24 @@ export const WorkspaceMemberScalarFieldEnum = {
 export type WorkspaceMemberScalarFieldEnum = (typeof WorkspaceMemberScalarFieldEnum)[keyof typeof WorkspaceMemberScalarFieldEnum]
 
 
+export const ProjectScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  description: 'description',
+  status: 'status',
+  priority: 'priority',
+  startDate: 'startDate',
+  dueDate: 'dueDate',
+  workspaceId: 'workspaceId',
+  createdById: 'createdById',
+  leadId: 'leadId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProjectScalarFieldEnum = (typeof ProjectScalarFieldEnum)[keyof typeof ProjectScalarFieldEnum]
+
+
 export const TaskScalarFieldEnum = {
   id: 'id',
   title: 'title',
@@ -126,6 +145,7 @@ export const TaskScalarFieldEnum = {
   workspaceId: 'workspaceId',
   createdById: 'createdById',
   assigneeId: 'assigneeId',
+  projectId: 'projectId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

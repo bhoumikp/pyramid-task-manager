@@ -47,4 +47,8 @@ export class UpdateTaskDto {
   @IsOptional()
   @IsBoolean()
   isPrivate?: boolean;
+
+  @IsOptional()
+  @IsString()
+  projectId?: string | null;
 }

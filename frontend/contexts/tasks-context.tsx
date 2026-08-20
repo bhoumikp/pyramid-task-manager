@@ -2,8 +2,8 @@
 
 import {
 	createContext,
-  useEffect,
-  useState,
+	useEffect,
+	useState,
 } from "react";
 
 import { createTask, getCurrentUser, getTasks, getWorkspaceMembers, updateTask } from "@/lib/api";
@@ -18,38 +18,41 @@ import {
 } from "@/lib/tasks";
 
 type TasksContextValue = {
-  tasks: Task[];
-  members: UserSummary[];
-  currentUser: UserSummary | null;
-  search: string;
-  statusFilters: Task["status"][];
-  priorityFilters: Task["priority"][];
-  memberFilters: string[];
-  reporterFilters: string[];
-  labelFilters: string[];
-  dueDateFilters: string[];
-  visibleFields: TaskFieldState;
-  loading: boolean;
-  setSearch: (search: string) => void;
-  toggleStatusFilter: (status: Task["status"]) => void;
-  togglePriorityFilter: (priority: Task["priority"]) => void;
-  toggleMemberFilter: (memberId: string) => void;
-  toggleReporterFilter: (reporterId: string) => void;
-  toggleLabelFilter: (label: string) => void;
-  toggleDueDateFilter: (dueDateKey: string) => void;
-  clearAllFilters: () => void;
-  toggleField: (field: TaskField) => void;
-  createNewTask: (task: CreateTaskInput) => Promise<Task>;
-  updateExistingTask: (taskId: string, updates: UpdateTaskInput) => Promise<Task>;
-  refreshTasks: () => Promise<void>;
+	tasks: Task[];
+	members: UserSummary[];
+	currentUser: UserSummary | null;
+	search: string;
+	statusFilters: Task["status"][];
+	priorityFilters: Task["priority"][];
+	memberFilters: string[];
+	reporterFilters: string[];
+	labelFilters: string[];
+	dueDateFilters: string[];
+	visibleFields: TaskFieldState;
+	loading: boolean;
+	projectId?: string;
+	setSearch: (search: string) => void;
+	toggleStatusFilter: (status: Task["status"]) => void;
+	togglePriorityFilter: (priority: Task["priority"]) => void;
+	toggleMemberFilter: (memberId: string) => void;
+	toggleReporterFilter: (reporterId: string) => void;
+	toggleLabelFilter: (label: string) => void;
+	toggleDueDateFilter: (dueDateKey: string) => void;
+	clearAllFilters: () => void;
+	toggleField: (field: TaskField) => void;
+	createNewTask: (task: CreateTaskInput) => Promise<Task>;
+	updateExistingTask: (taskId: string, updates: UpdateTaskInput) => Promise<Task>;
+	refreshTasks: () => Promise<void>;
 };
 
 export const TasksContext = createContext<TasksContextValue | undefined>(undefined);
 
 export function TasksProvider({
-  	children,
+	children,
+	projectId,
 }: {
-  	children: React.ReactNode;
+	children: React.ReactNode;
+	projectId?: string;
 }) {
 	const [tasks, setTasks] = useState<Task[]>([]);
 	const [members, setMembers] = useState<UserSummary[]>([]);
@@ -72,7 +75,11 @@ export function TasksProvider({
 				getWorkspaceMembers(),
 				getCurrentUser(),
 			]);
-			setTasks(result);
+			let filteredTasks = result;
+			if (projectId) {
+				filteredTasks = result.filter((t) => t.projectId === projectId);
+			}
+			setTasks(filteredTasks);
 			setMembers(membersList);
 			setCurrentUser(me);
 		} catch (error) {
@@ -96,15 +103,20 @@ export function TasksProvider({
 				}
 			}
 		}
-	}, []);
+	}, [projectId]);
 
-  	async function createNewTask(data: CreateTaskInput) {
-		const newTask = await createTask(data);
+	async function createNewTask(data: CreateTaskInput) {
+		const payload = {
+			...data,
+			...(projectId && !data.projectId ? { projectId } : {}),
+		};
+
+		const newTask = await createTask(payload);
 
 		setTasks((current) => [newTask, ...current]);
 
 		return newTask;
-  	}
+	}
 
 	async function updateExistingTask(taskId: string, updates: UpdateTaskInput) {
 		const updated = await updateTask(taskId, updates);
@@ -172,7 +184,7 @@ export function TasksProvider({
 		});
 	}
 
-  	return (
+	return (
 		<TasksContext.Provider
 			value={{
 				tasks,
@@ -187,6 +199,7 @@ export function TasksProvider({
 				dueDateFilters,
 				visibleFields,
 				loading,
+				projectId,
 				setSearch,
 				toggleStatusFilter,
 				togglePriorityFilter,
@@ -203,5 +216,5 @@ export function TasksProvider({
 		>
 			{children}
 		</TasksContext.Provider>
-  	);
+	);
 }

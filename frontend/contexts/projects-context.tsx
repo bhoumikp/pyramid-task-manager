@@ -1,24 +1,29 @@
 "use client";
 
-import { createContext, useEffect, useState } from "react";
-import { getCurrentUser, getWorkspaceMembers } from "@/lib/api";
+import {
+	createContext,
+	useEffect,
+	useState,
+} from "react";
+
+import {
+	createProjectApi,
+	deleteProjectApi,
+	getCurrentUser,
+	getProjects,
+	getWorkspaceMembers,
+	updateProjectApi,
+} from "@/lib/api";
 import {
 	defaultProjectFields,
 	initialProjects,
+	type CreateProjectInput,
 	type Project,
 	type ProjectField,
 	type ProjectFieldState,
 } from "@/lib/projects";
+export type { CreateProjectInput };
 import type { Task, UserSummary } from "@/lib/tasks";
-
-export type CreateProjectInput = {
-	title: string;
-	description?: string;
-	priority: Task["priority"];
-	leadId?: string | null;
-	startDate?: string | null;
-	dueDate?: string | null;
-};
 
 type ProjectsContextValue = {
 	projects: Project[];
@@ -36,28 +41,15 @@ type ProjectsContextValue = {
 	toggleDueDateFilter: (dueDateKey: string) => void;
 	clearAllFilters: () => void;
 	toggleField: (field: ProjectField) => void;
-	createProject: (input: CreateProjectInput) => void;
-	updateProject: (id: string, updates: Partial<Project> & { leadId?: string | null }) => void;
-	deleteProject: (id: string) => void;
+	createProject: (input: CreateProjectInput) => Promise<void>;
+	updateProject: (id: string, updates: Partial<Project> & { leadId?: string | null }) => Promise<void>;
+	deleteProject: (id: string) => Promise<void>;
 };
 
 export const ProjectsContext = createContext<ProjectsContextValue | undefined>(undefined);
 
 export function ProjectsProvider({ children }: { children: React.ReactNode }) {
-	const [projects, setProjects] = useState<Project[]>(() => {
-		if (typeof window !== "undefined") {
-			const saved = localStorage.getItem("pyramid_projects_data");
-			if (saved) {
-				try {
-					return JSON.parse(saved);
-				} catch (e) {
-					console.error("Failed to parse saved projects", e);
-				}
-			}
-		}
-		return initialProjects;
-	});
-
+	const [projects, setProjects] = useState<Project[]>([]);
 	const [members, setMembers] = useState<UserSummary[]>([]);
 	const [currentUser, setCurrentUser] = useState<UserSummary | null>(null);
 	const [search, setSearch] = useState("");
@@ -84,14 +76,18 @@ export function ProjectsProvider({ children }: { children: React.ReactNode }) {
 	useEffect(() => {
 		async function initData() {
 			try {
-				const [membersList, me] = await Promise.all([
+				const [membersList, me, remoteProjects] = await Promise.all([
 					getWorkspaceMembers(),
 					getCurrentUser(),
+					getProjects(),
 				]);
 				setMembers(membersList);
 				setCurrentUser(me);
+				if (Array.isArray(remoteProjects)) {
+					setProjects(remoteProjects);
+				}
 			} catch (err) {
-				console.error("Failed to load workspace members/current user", err);
+				console.error("Failed to load workspace or project data", err);
 			} finally {
 				setLoading(false);
 			}
@@ -100,33 +96,16 @@ export function ProjectsProvider({ children }: { children: React.ReactNode }) {
 		void initData();
 	}, []);
 
-	useEffect(() => {
-		if (typeof window !== "undefined") {
-			localStorage.setItem("pyramid_projects_data", JSON.stringify(projects));
+	async function createProject(input: CreateProjectInput) {
+		try {
+			const created = await createProjectApi(input);
+			setProjects((current) => [created, ...current]);
+		} catch (error) {
+			console.error("Failed to create project", error);
 		}
-	}, [projects]);
-
-	function createProject(input: CreateProjectInput) {
-		const leadUser = input.leadId
-			? members.find((m) => m.id === input.leadId) ?? null
-			: null;
-
-		const newProj: Project = {
-			id: `proj-${Date.now()}`,
-			title: input.title,
-			description: input.description,
-			status: "PLANNING",
-			priority: input.priority,
-			lead: leadUser,
-			startDate: input.startDate,
-			dueDate: input.dueDate,
-			createdAt: new Date().toISOString(),
-		};
-
-		setProjects((current) => [newProj, ...current]);
 	}
 
-	function updateProject(id: string, updates: Partial<Project> & { leadId?: string | null }) {
+	async function updateProject(id: string, updates: Partial<Project> & { leadId?: string | null }) {
 		setProjects((current) =>
 			current.map((p) => {
 				if (p.id !== id) return p;
@@ -145,10 +124,22 @@ export function ProjectsProvider({ children }: { children: React.ReactNode }) {
 				};
 			})
 		);
+
+		try {
+			await updateProjectApi(id, updates);
+		} catch (error) {
+			console.warn("Failed to sync project update with backend API", error);
+		}
 	}
 
-	function deleteProject(id: string) {
+	async function deleteProject(id: string) {
 		setProjects((current) => current.filter((p) => p.id !== id));
+
+		try {
+			await deleteProjectApi(id);
+		} catch (error) {
+			console.warn("Failed to sync project deletion with backend API", error);
+		}
 	}
 
 	function togglePriorityFilter(priority: Task["priority"]) {

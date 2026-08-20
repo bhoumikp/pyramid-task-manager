@@ -16,6 +16,7 @@ const taskSelect = {
   dueDate: true,
   labels: true,
   isPrivate: true,
+  projectId: true,
   createdAt: true,
   updatedAt: true,
 
@@ -137,6 +138,7 @@ export class TasksService {
         priority: dto.priority,
         startDate: dto.startDate ? new Date(dto.startDate) : undefined,
         dueDate: dto.dueDate ? new Date(dto.dueDate) : undefined,
+        projectId: dto.projectId || undefined,
         workspaceId: workspaceId,
         createdById: userId,
       },
@@ -256,6 +258,10 @@ export class TasksService {
       activityMessages.push(
         dto.isPrivate ? 'made task private' : 'made task public',
       );
+    }
+
+    if (dto.projectId !== undefined) {
+      data.projectId = dto.projectId;
     }
 
     await this.prisma.task.update({

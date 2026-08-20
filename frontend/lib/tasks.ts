@@ -47,6 +47,7 @@ export type Task = {
 	dueDate: string | null;
 	labels?: string[];
 	isPrivate?: boolean;
+	projectId?: string | null;
 	assignee: UserSummary | null;
 	createdBy: UserSummary;
 	watchers?: UserSummary[];
@@ -78,6 +79,7 @@ export type CreateTaskInput = {
 	priority: "NONE" | "URGENT" | "HIGH" | "MEDIUM" | "LOW";
 	startDate?: string;
 	dueDate?: string;
+	projectId?: string | null;
 };
 
 export type UpdateTaskInput = {
@@ -90,6 +92,7 @@ export type UpdateTaskInput = {
 	dueDate?: string | null;
 	labels?: string[];
 	isPrivate?: boolean;
+	projectId?: string | null;
 };
 
 export type CreateSubtaskInput = {

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { ArrowRight, Calendar as CalendarIcon, ChevronDown, Plus, Trash2 } from "lucide-react";
 import { format, parseISO } from "date-fns";
@@ -29,6 +30,7 @@ import { PrioritySelect } from "../tasks/priority-select";
 import { useProjects } from "@/hooks/use-projects";
 import type { Project, ProjectFieldState } from "@/lib/projects";
 import { ProjectAddDialog } from "./project-add-dialog";
+import { Skeleton } from "../ui/skeleton";
 
 function formatProjectDate(dateStr?: string | null) {
 	if (!dateStr) return null;
@@ -105,8 +107,9 @@ export function ProjectTable() {
 
 	if (loading) {
 		return (
-			<div className="flex flex-1 items-center justify-center p-8 text-sm text-muted-foreground">
-				Loading projects...
+			<div className="flex h-full min-h-0 flex-col p-4 gap-4">
+				<Skeleton className="h-8 w-48 rounded-md" />
+				<Skeleton className="h-64 w-full rounded-md" />
 			</div>
 		);
 	}
@@ -135,9 +138,13 @@ export function ProjectTable() {
 						) : (
 							filteredProjects.map((project: Project) => (
 								<TableRow key={project.id}>
-									{/* Project Name & Description */}
 									<TableCell className="px-3">
-										{project.title}
+										<Link
+											href={`/projects/${project.id}`}
+											className="font-medium text-foreground hover:underline hover:text-primary transition-colors cursor-pointer"
+										>
+											{project.title}
+										</Link>
 									</TableCell>
 
 									{/* Priority */}

@@ -32,7 +32,7 @@ import {
 	SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import Link from "next/link";
-import { useTheme } from "next-themes";
+import { useTheme } from "../providers/theme-provider";
 import { Accent, useAccent } from "../providers/accent-provider";
 
 export function SidebarNavUser({

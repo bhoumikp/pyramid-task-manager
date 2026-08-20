@@ -17,6 +17,15 @@ export type Project = {
 export type ProjectField = "priority" | "lead" | "dueDate";
 export type ProjectFieldState = Record<ProjectField, boolean>;
 
+export type CreateProjectInput = {
+	title: string;
+	description?: string;
+	priority: Task["priority"];
+	leadId?: string | null;
+	startDate?: string | null;
+	dueDate?: string | null;
+};
+
 export const projectFieldLabels: Record<ProjectField, string> = {
 	priority: "Priority",
 	lead: "Lead",
