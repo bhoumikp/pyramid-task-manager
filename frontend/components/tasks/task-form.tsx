@@ -283,6 +283,7 @@ export function TaskForm({
 									<FieldLabel>Start Date</FieldLabel>
 									<Popover>
 										<PopoverTrigger
+											nativeButton={false}
 											render={
 												<Button
 													variant="outline"
@@ -324,6 +325,7 @@ export function TaskForm({
 									<FieldLabel>Due Date</FieldLabel>
 									<Popover>
 										<PopoverTrigger
+											nativeButton={false}
 											render={
 												<Button
 													variant="outline"

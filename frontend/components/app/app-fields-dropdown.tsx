@@ -7,21 +7,23 @@ import { Label } from "../ui/label";
 import { TaskView } from "../tasks/task-shell";
 import { taskFieldLabels, TaskField, TaskFieldState } from "@/lib/tasks";
 
-interface AppFieldsDropdownProps {
-  fields: TaskField[];
-  visibleFields: TaskFieldState;
-  view: TaskView;
-  onViewChange: (view: TaskView) => void;
-  onFieldToggle: (field: TaskField) => void;
+interface AppFieldsDropdownProps<T extends string = string> {
+  fields: T[];
+  visibleFields: Record<T, boolean>;
+  view?: TaskView;
+  onViewChange?: (view: TaskView) => void;
+  onFieldToggle: (field: T) => void;
+  fieldLabels?: Record<T, string>;
 }
 
-export function AppFieldsDropdown({
+export function AppFieldsDropdown<T extends string = TaskField>({
 	fields,
 	visibleFields,
 	view,
 	onViewChange,
 	onFieldToggle,
-} : AppFieldsDropdownProps) {
+	fieldLabels = taskFieldLabels as unknown as Record<T, string>,
+} : AppFieldsDropdownProps<T>) {
 	function isTaskView(value: string): value is TaskView {
 		return value === "board" || value === "list";
 	}
@@ -31,7 +33,6 @@ export function AppFieldsDropdown({
 			<DropdownMenuTrigger render={
 				<Button
 					variant={"outline"} 
-					// size={"lg"}
 					className={"rounded text-xs"}
 				>
 					<Columns3 /> 
@@ -44,41 +45,45 @@ export function AppFieldsDropdown({
 				align="center"
 			>
 				<DropdownMenuGroup className={"flex flex-col gap-4"}>
-					<ToggleGroup 
-						value={[view]}
-						variant={"outline"}
-						size={"lg"}
-						spacing={0}
-						onValueChange={(value) => {
-							const nextView = value[0];
+					{view && onViewChange && (
+						<ToggleGroup 
+							value={[view]}
+							variant={"outline"}
+							size={"lg"}
+							spacing={0}
+							onValueChange={(value) => {
+								const nextView = value[0];
 
-							if (nextView && isTaskView(nextView)) {
-								onViewChange(nextView);
-							}
-						}}
-					>
-						<ToggleGroupItem 
-							className={"cursor-pointer rounded-l-md rounded-r-none w-34 px-3"}
-							value="list" 
-							aria-label="Toggle list"
+								if (nextView && isTaskView(nextView)) {
+									onViewChange(nextView);
+								}
+							}}
 						>
-							<TextAlignJustify />
-							List
-						</ToggleGroupItem>
-						<ToggleGroupItem 
-							className={"cursor-pointer rounded-r-md rounded-l-none w-34 px-3"}
-							value="board" 
-							aria-label="Toggle board"
-						>
-							<Grid2x2 />
-							Board
-						</ToggleGroupItem>
-					</ToggleGroup>
+							<ToggleGroupItem 
+								className={"cursor-pointer rounded-l-md rounded-r-none w-34 px-3"}
+								value="list" 
+								aria-label="Toggle list"
+							>
+								<TextAlignJustify />
+								List
+							</ToggleGroupItem>
+							<ToggleGroupItem 
+								className={"cursor-pointer rounded-r-md rounded-l-none w-34 px-3"}
+								value="board" 
+								aria-label="Toggle board"
+							>
+								<Grid2x2 />
+								Board
+							</ToggleGroupItem>
+						</ToggleGroup>
+					)}
 
 					<ul>
 						{fields.map((field) => (
 							<li key={field} className="flex justify-between items-center min-h-8">
-								<Label className="text-xs" htmlFor={field}>{taskFieldLabels[field]}</Label>
+								<Label className="text-xs capitalize" htmlFor={field}>
+									{fieldLabels[field] ?? field}
+								</Label>
 								<Checkbox
 									id={field}
 									checked={visibleFields[field]}
