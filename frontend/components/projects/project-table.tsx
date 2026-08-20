@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { ArrowRight, Calendar as CalendarIcon, ChevronDown, Plus, Trash2 } from "lucide-react";
+import { ArrowRight, Calendar as CalendarIcon, ChevronDown, GalleryVerticalEnd, Plus, Trash2 } from "lucide-react";
 import { format, parseISO } from "date-fns";
 
 import {
@@ -129,13 +129,7 @@ export function ProjectTable() {
 					</TableHeader>
 
 					<TableBody>
-						{filteredProjects.length === 0 ? (
-							<TableRow>
-								<TableCell colSpan={footerColSpan} className="text-center py-8 text-muted-foreground text-xs">
-									No projects found.
-								</TableCell>
-							</TableRow>
-						) : (
+						{filteredProjects.length >= 0 &&
 							filteredProjects.map((project: Project) => (
 								<TableRow key={project.id}>
 									<TableCell className="px-3">
@@ -170,15 +164,15 @@ export function ProjectTable() {
 														className="flex items-center gap-2 text-xs cursor-pointer border-0 bg-transparent p-0"
 													>
 														{project.lead ? (
-															<Avatar className="size-6 rounded-full">
+															<Avatar className="size-7 rounded-full">
 																<AvatarImage src={project.lead.avatarUrl ?? undefined} />
 																<AvatarFallback className="text-[10px]">
 																	{project.lead.name.slice(0, 1).toUpperCase()}
 																</AvatarFallback>
 															</Avatar>
 														) : (
-															<span className="size-6 inline-flex items-center justify-center rounded-full bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors">
-																<Plus size={12} />
+															<span className="size-7 inline-flex items-center justify-center rounded-full bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors">
+																<Plus size={14} />
 															</span>
 														)}
 													</button>
@@ -198,7 +192,7 @@ export function ProjectTable() {
 													render={
 														<button
 															type="button"
-															className="cursor-pointer text-xs hover:underline border-0 bg-transparent p-0 text-left font-normal"
+															className="cursor-pointer text-sm hover:underline border-0 bg-transparent p-0 text-left font-normal"
 														>
 															{project.dueDate ? (
 																<span className="font-medium">
@@ -210,8 +204,9 @@ export function ProjectTable() {
 														</button>
 													}
 												/>
-												<PopoverContent className="w-auto p-3" align="start">
+												<PopoverContent className="w-auto" align="start">
 													<Calendar
+														className="p-3"
 														mode="single"
 														selected={project.dueDate ? parseISO(project.dueDate) : undefined}
 														onSelect={(date) => {
@@ -245,7 +240,7 @@ export function ProjectTable() {
 									</TableCell>
 								</TableRow>
 							))
-						)}
+						}
 					</TableBody>
 
 					<TableFooter className="bg-background">

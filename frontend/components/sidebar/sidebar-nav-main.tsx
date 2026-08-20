@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ChevronDown, LucideIcon } from "lucide-react";
+import { ChevronDown, LucideIcon, Plus } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -23,6 +23,7 @@ import {
 import { getProjects } from "@/lib/api";
 import { type Project } from "@/lib/projects";
 import { cn } from "@/lib/utils";
+import { ProjectAddDialog } from "@/components/projects/project-add-dialog";
 
 export function SidebarNavMain({
 	items,
@@ -110,31 +111,42 @@ export function SidebarNavMain({
 												/>
 											</div>
 
-											{projects.length > 0 && (
-												<CollapsibleContent>
-													<SidebarMenuSub className="my-1 gap-0.5">
-														{projects.map((proj) => {
-															const isSubActive = pathname === `/projects/${proj.id}`;
-															return (
-																<SidebarMenuSubItem key={proj.id}>
-																	<SidebarMenuSubButton
-																		isActive={isSubActive}
-																		render={<Link href={`/projects/${proj.id}`} />}
-																		className={cn(
-																			"px-3 py-1.5 text-xs rounded-lg transition-colors cursor-pointer",
-																			isSubActive
-																				? "bg-sidebar-accent font-semibold text-sidebar-accent-foreground"
-																				: "text-foreground"
-																		)}
-																	>
-																		<span className="truncate">{proj.title}</span>
-																	</SidebarMenuSubButton>
-																</SidebarMenuSubItem>
-															);
-														})}
-													</SidebarMenuSub>
-												</CollapsibleContent>
-											)}
+											<CollapsibleContent>
+												<SidebarMenuSub className="my-1 gap-0.5">
+													{projects.map((proj) => {
+														const isSubActive = pathname === `/projects/${proj.id}`;
+														return (
+															<SidebarMenuSubItem key={proj.id}>
+																<SidebarMenuSubButton
+																	isActive={isSubActive}
+																	render={<Link href={`/projects/${proj.id}`} />}
+																	className={cn(
+																		"px-3 py-1.5 text-xs rounded-lg transition-colors cursor-pointer",
+																		isSubActive
+																			? "bg-sidebar-accent font-semibold text-sidebar-accent-foreground"
+																			: "text-foreground"
+																	)}
+																>
+																	<span className="truncate">{proj.title}</span>
+																</SidebarMenuSubButton>
+															</SidebarMenuSubItem>
+														);
+													})}
+													<SidebarMenuSubItem>
+														<ProjectAddDialog
+															nativeButton={false}
+															trigger={
+																<SidebarMenuSubButton
+																	className="px-3 py-1.5 rounded-lg hover:text-foreground transition-colors cursor-pointer flex items-center gap-1.5 w-full"
+																>
+																	<Plus size={12} />
+																	<span className="text-xs font-medium">Add Project</span>
+																</SidebarMenuSubButton>
+															}
+														/>
+													</SidebarMenuSubItem>
+												</SidebarMenuSub>
+											</CollapsibleContent>
 										</SidebarMenuItem>
 									</Collapsible>
 								);

@@ -8,7 +8,44 @@ export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
-  ) {}
+  ) { }
+
+  async validateGoogleUser(googleUser: {
+    googleId: string;
+    email: string;
+    name: string;
+    avatarUrl?: string;
+  }) {
+    let user = await this.prisma.user.findFirst({
+      where: {
+        OR: [{ googleId: googleUser.googleId }, { email: googleUser.email }],
+      },
+    });
+
+    if (!user) {
+      user = await this.prisma.user.create({
+        data: {
+          name: googleUser.name,
+          username: googleUser.email.split('@')[0],
+          email: googleUser.email,
+          avatarUrl: googleUser.avatarUrl,
+          authProvider: 'GOOGLE',
+          googleId: googleUser.googleId,
+        },
+      });
+
+      const workspace = await this.prisma.workspace.create({
+        data: { name: `${googleUser.name}'s Workspace` },
+      });
+
+      await this.prisma.workspaceMember.create({
+        data: { userId: user.id, workspaceId: workspace.id },
+      });
+    }
+
+    const accessToken = this.jwtService.sign({ sub: user.id });
+    return { accessToken, user };
+  }
 
   async loginAsGuest(existingToken?: string) {
     if (existingToken) {
@@ -32,12 +69,9 @@ export class AuthService {
           };
         }
       } catch {
-        // Invalid or expired token.
-        // Treat the request as a new guest session.
       }
     }
 
-    // No token, invalid token, or token belongs to another user type.
     const user = await this.prisma.user.create({
       data: {
         name: 'Guest User',
