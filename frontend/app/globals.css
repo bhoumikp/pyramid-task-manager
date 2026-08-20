@@ -214,4 +214,21 @@
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
+
+  .no-focus-border {
+    border: 0 !important;
+    outline: none !important;
+    box-shadow: none !important;
+  }
+
+  .no-focus-border,
+  .no-focus-border:focus,
+  .no-focus-border:focus-within,
+  .no-focus-border:focus-visible,
+  .no-focus-border:has([data-slot=input-group-control]:focus-visible) {
+    border-color: transparent !important;
+    outline: none !important;
+    box-shadow: none !important;
+    --tw-ring-color: transparent !important;
+  }
 }

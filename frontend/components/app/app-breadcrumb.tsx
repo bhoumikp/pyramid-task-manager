@@ -32,12 +32,12 @@ export function AppBreadcrumb() {
 							<BreadcrumbItem className="min-w-0">
 								{item.href && !isLast ? (
 									<BreadcrumbLink asChild>
-										<Link href={item.href} className="truncate">
+										<Link href={item.href} className="max-w-40 sm:max-w-64 truncate inline-block" title={item.label}>
 											{item.label}
 										</Link>
 									</BreadcrumbLink>
 								) : (
-									<BreadcrumbPage className="truncate">
+									<BreadcrumbPage className="max-w-40 sm:max-w-64 truncate inline-block" title={item.label}>
 										{item.label}
 									</BreadcrumbPage>
 								)}

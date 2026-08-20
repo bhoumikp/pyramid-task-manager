@@ -1,4 +1,13 @@
-import { CreateTaskInput, Task } from "./tasks";
+import {
+	CreateCommentInput,
+	CreateSubtaskInput,
+	CreateTaskInput,
+	Subtask,
+	Task,
+	UpdateSubtaskInput,
+	UpdateTaskInput,
+	UserSummary,
+} from "./tasks";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api";
 
@@ -27,7 +36,7 @@ export async function getCurrentUser() {
 	return response.json();
 }
 
-export async function getTasks(): Promise<Task[]>  {
+export async function getTasks(): Promise<Task[]> {
 	const response = await fetch(`${API_URL}/tasks`, {
 		credentials: "include",
 	});
@@ -51,18 +60,137 @@ export async function getTask(taskId: string): Promise<Task> {
 	return response.json();
 }
 
-export async function createTask(data: CreateTaskInput) {
-  	const response = await fetch(`${API_URL}/tasks`, {
+export async function createTask(data: CreateTaskInput): Promise<Task> {
+	const response = await fetch(`${API_URL}/tasks`, {
 		method: "POST",
 		credentials: "include",
 		headers: {
 			"Content-Type": "application/json",
 		},
 		body: JSON.stringify(data),
- 	});
+	});
 
 	if (!response.ok) {
 		throw new Error("Failed to create task");
+	}
+
+	return response.json();
+}
+
+export async function updateTask(taskId: string, data: UpdateTaskInput): Promise<Task> {
+	const response = await fetch(`${API_URL}/tasks/${taskId}`, {
+		method: "PATCH",
+		credentials: "include",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(data),
+	});
+
+	if (!response.ok) {
+		throw new Error("Failed to update task");
+	}
+
+	return response.json();
+}
+
+export async function toggleTaskWatch(taskId: string): Promise<Task> {
+	const response = await fetch(`${API_URL}/tasks/${taskId}/watch`, {
+		method: "POST",
+		credentials: "include",
+	});
+
+	if (!response.ok) {
+		throw new Error("Failed to toggle task watch status");
+	}
+
+	return response.json();
+}
+
+export async function createSubtask(taskId: string, data: CreateSubtaskInput): Promise<Subtask> {
+	const response = await fetch(`${API_URL}/tasks/${taskId}/subtasks`, {
+		method: "POST",
+		credentials: "include",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(data),
+	});
+
+	if (!response.ok) {
+		throw new Error("Failed to create subtask");
+	}
+
+	return response.json();
+}
+
+export async function updateSubtask(
+	taskId: string,
+	subtaskId: string,
+	data: UpdateSubtaskInput,
+): Promise<Subtask> {
+	const response = await fetch(`${API_URL}/tasks/${taskId}/subtasks/${subtaskId}`, {
+		method: "PATCH",
+		credentials: "include",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(data),
+	});
+
+	if (!response.ok) {
+		throw new Error("Failed to update subtask");
+	}
+
+	return response.json();
+}
+
+export async function deleteSubtask(taskId: string, subtaskId: string): Promise<void> {
+	const response = await fetch(`${API_URL}/tasks/${taskId}/subtasks/${subtaskId}`, {
+		method: "DELETE",
+		credentials: "include",
+	});
+
+	if (!response.ok) {
+		throw new Error("Failed to delete subtask");
+	}
+}
+
+export async function createComment(taskId: string, data: CreateCommentInput) {
+	const response = await fetch(`${API_URL}/tasks/${taskId}/comments`, {
+		method: "POST",
+		credentials: "include",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(data),
+	});
+
+	if (!response.ok) {
+		throw new Error("Failed to post comment");
+	}
+
+	return response.json();
+}
+
+export async function deleteComment(taskId: string, commentId: string): Promise<void> {
+	const response = await fetch(`${API_URL}/tasks/${taskId}/comments/${commentId}`, {
+		method: "DELETE",
+		credentials: "include",
+	});
+
+	if (!response.ok) {
+		throw new Error("Failed to delete comment");
+	}
+}
+
+export async function getWorkspaceMembers(): Promise<UserSummary[]> {
+	const response = await fetch(`${API_URL}/tasks/members`, {
+		credentials: "include",
+	});
+
+	if (!response.ok) {
+		return [];
 	}
 
 	return response.json();

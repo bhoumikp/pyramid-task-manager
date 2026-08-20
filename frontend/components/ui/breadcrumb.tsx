@@ -47,11 +47,11 @@ function BreadcrumbLink({
 	asChild?: boolean;
 	children: React.ReactNode;
 }) {
-	if (asChild && React.isValidElement(children)) {
+	if (asChild && React.isValidElement<{ className?: string }>(children)) {
 		return React.cloneElement(children, {
 			...props,
 			className: cn("transition-colors hover:text-foreground", className, children.props.className),
-		});
+		} as React.HTMLAttributes<HTMLElement>);
 	}
 
 	return (

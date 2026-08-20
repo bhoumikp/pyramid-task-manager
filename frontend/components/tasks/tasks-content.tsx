@@ -9,21 +9,82 @@ import { TaskView } from "./task-shell";
 import { useTasks } from "@/hooks/use-tasks";
 import { arrayMove } from "@dnd-kit/sortable";
 
+function matchesDueDateFilter(dueDateStr: string | null | undefined, filterKeys: string[]): boolean {
+	if (filterKeys.length === 0) return true;
+	if (!dueDateStr) return filterKeys.includes("no_due_date");
+
+	const due = new Date(dueDateStr);
+	const now = new Date();
+	const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+	const endOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+	const endOfWeek = new Date(startOfToday);
+	endOfWeek.setDate(endOfWeek.getDate() + (7 - endOfWeek.getDay()));
+	endOfWeek.setHours(23, 59, 59, 999);
+
+	return filterKeys.some((key) => {
+		if (key === "no_due_date") return !dueDateStr;
+		if (key === "overdue") return due < startOfToday;
+		if (key === "today") return due >= startOfToday && due <= endOfToday;
+		if (key === "this_week") return due >= startOfToday && due <= endOfWeek;
+		return false;
+	});
+}
+
 export function TaskContent({view} : { view: TaskView}) {
-	const { tasks, loading, search, priorityFilters, visibleFields } = useTasks();
+	const {
+		tasks,
+		loading,
+		search,
+		statusFilters,
+		priorityFilters,
+		memberFilters,
+		reporterFilters,
+		labelFilters,
+		dueDateFilters,
+		visibleFields,
+	} = useTasks();
+
 	const filteredTasks = tasks.filter((task) => {
 		const query = search.trim().toLowerCase();
 		const matchesSearch =
 			query.length === 0 ||
 			task.title.toLowerCase().includes(query) ||
 			(task.description ?? "").toLowerCase().includes(query) ||
-			(task.assignee?.name ?? "").toLowerCase().includes(query);
+			(task.assignee?.name ?? "").toLowerCase().includes(query) ||
+			(task.createdBy?.name ?? "").toLowerCase().includes(query);
+
+		const matchesStatus =
+			statusFilters.length === 0 ||
+			statusFilters.includes(task.status);
 
 		const matchesPriority =
 			priorityFilters.length === 0 ||
 			priorityFilters.includes(task.priority);
 
-		return matchesSearch && matchesPriority;
+		const matchesMember =
+			memberFilters.length === 0 ||
+			(memberFilters.includes("unassigned") && !task.assignee) ||
+			(task.assignee && memberFilters.includes(task.assignee.id));
+
+		const matchesReporter =
+			reporterFilters.length === 0 ||
+			(task.createdBy && reporterFilters.includes(task.createdBy.id));
+
+		const matchesLabel =
+			labelFilters.length === 0 ||
+			(task.labels && task.labels.some((l) => labelFilters.includes(l)));
+
+		const matchesDueDate = matchesDueDateFilter(task.dueDate, dueDateFilters);
+
+		return (
+			matchesSearch &&
+			matchesStatus &&
+			matchesPriority &&
+			matchesMember &&
+			matchesReporter &&
+			matchesLabel &&
+			matchesDueDate
+		);
 	});
 	const taskCols = groupTasksByStatus(filteredTasks);
 	const [columnOrder, setColumnOrder] = useState<TaskCol["id"][]>([

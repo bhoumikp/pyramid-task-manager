@@ -71,12 +71,13 @@ export function AppSearchBar({
 		<>
 			<InputGroup 
 				className={`max-w-xs rounded h-full -mr-10 z-1 overflow-hidden transition-all duration-300 ease-in-out ${
-					open ? "opacity-100 " : "opacity-0 "
+					open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
 				}`}
 			>
 				<InputGroupInput
 					ref={inputRef}
 					value={value}
+					tabIndex={open ? 0 : -1}
 					onChange={(e) => onValueChange(e.target.value)}
 					onBlur={handleBlur}
 					className="text-accent-foreground" 
@@ -95,7 +96,11 @@ export function AppSearchBar({
 				// size={"icon-lg"}
 				onClick={openSearch}
 				onMouseEnter={handleMouseEnter}
-				className={`px-2 rounded z-2 transition-all duration-300 ease-in-out ${open ? "opacity-0": "opacity-100"}`}>
+				tabIndex={open ? -1 : 0}
+				className={`px-2 rounded z-2 transition-all duration-300 ease-in-out ${
+					open ? "opacity-0 pointer-events-none" : "opacity-100 pointer-events-auto"
+				}`}
+			>
 					<Search/>
 			</Button>
 		</>

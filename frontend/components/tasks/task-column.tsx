@@ -8,12 +8,13 @@ import { TaskCol, TaskFieldState } from "@/lib/tasks";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { cn } from "@/lib/utils";
+import { AppAddDialogue } from "@/components/app/app-add-dialogue";
 
 export function TaskColumn({
 	columnData,
 	visibleFields,
 	isDragging,
-} : {
+}: {
 	columnData: TaskCol,
 	visibleFields: TaskFieldState;
 	isDragging?: boolean;
@@ -29,30 +30,34 @@ export function TaskColumn({
 	});
 
 	return (
-		<Card 
+		<Card
 			ref={setNodeRef}
 			style={{
 				transform: CSS.Transform.toString(transform),
 				transition,
 			}}
 			className={cn(
-				"flex h-fit max-h-full min-h-0 w-[289px] shrink-0 flex-col gap-0 rounded-lg bg-muted p-0 border", 
+				"flex h-fit max-h-full min-h-0 w-[320px] shrink-0 flex-col gap-0 rounded-lg bg-muted p-0 border",
 				isDragging && "opacity-0"
 			)}
 		>
 			<CardHeader className="flex shrink-0 justify-between rounded-t-lg p-3">
 				<div className="flex gap-2 text-xs text-primary">
-					<GripVertical 
+					<GripVertical
 						{...attributes}
-  						{...listeners}
-						className="cursor-grab active:cursor-grabbing" 
+						{...listeners}
+						className="cursor-grab active:cursor-grabbing"
 						size={14}
 					/>
 					<span className="font-semibold">{columnData.title}</span>
 				</div>
-				<div className="flex gap-2 text-xs text-primary">
-					<Plus className="cursor-pointer" size={14}/>
-					<Ellipsis className="cursor-pointer" size={14}/>
+				<div className="flex gap-2 items-center text-xs text-primary">
+					<AppAddDialogue
+						initialStatus={columnData.id}
+						nativeButton={false}
+						trigger={<Plus className="cursor-pointer" size={14} />}
+					/>
+					<Ellipsis className="cursor-pointer" size={14} />
 				</div>
 			</CardHeader>
 
@@ -61,7 +66,7 @@ export function TaskColumn({
 					columnData.tasks.map((task) => (
 						<TaskCard key={task.id} taskData={task} visibleFields={visibleFields} />
 					))
-					) : (
+				) : (
 					<span className="text-center text-muted-foreground font-normal inline-block w-full py-4">
 						No tasks added yet
 					</span>
@@ -69,14 +74,19 @@ export function TaskColumn({
 			</CardContent>
 
 			<CardFooter className="shrink-0 border-0 bg-muted p-3">
-				<Button 
-					variant={"ghost"}
-					size={"xs"}
-					className={"border-0 rounded-3xl"}
-				>
-					<Plus />	
-					Add Task
-				</Button>
+				<AppAddDialogue
+					initialStatus={columnData.id}
+					trigger={
+						<Button
+							variant={"ghost"}
+							size={"xs"}
+							className={"border-0 rounded-3xl cursor-pointer"}
+						>
+							<Plus />
+							Add Task
+						</Button>
+					}
+				/>
 			</CardFooter>
 		</Card>
 	)

@@ -1,4 +1,6 @@
 import {
+  IsArray,
+  IsBoolean,
   IsDateString,
   IsEnum,
   IsOptional,
@@ -7,14 +9,15 @@ import {
 } from 'class-validator';
 import { TaskPriority, TaskStatus } from '../../generated/prisma/enums';
 
-export class CreateTaskDto {
+export class UpdateTaskDto {
+  @IsOptional()
   @IsString()
   @MinLength(1)
-  title: string;
+  title?: string;
 
   @IsOptional()
   @IsString()
-  description?: string;
+  description?: string | null;
 
   @IsOptional()
   @IsEnum(TaskStatus)
@@ -25,10 +28,23 @@ export class CreateTaskDto {
   priority?: TaskPriority;
 
   @IsOptional()
-  @IsDateString()
-  startDate?: string;
+  @IsString()
+  assigneeId?: string | null;
 
   @IsOptional()
   @IsDateString()
-  dueDate?: string;
+  startDate?: string | null;
+
+  @IsOptional()
+  @IsDateString()
+  dueDate?: string | null;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  labels?: string[];
+
+  @IsOptional()
+  @IsBoolean()
+  isPrivate?: boolean;
 }

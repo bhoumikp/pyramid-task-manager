@@ -1,3 +1,5 @@
+"use client";
+
 import { GalleryVerticalEnd, LayoutDashboard, LucideIcon } from "lucide-react";
 import { Sidebar, SidebarContent, SidebarHeader } from "../ui/sidebar";
 import { SidebarNavUser } from "./sidebar-nav-user";

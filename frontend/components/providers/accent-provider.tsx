@@ -24,7 +24,7 @@ const AccentContext = createContext<AccentContextValue | undefined>(
   undefined,
 );
 
-const DEFAULT_ACCENT: Accent = "amber";
+const DEFAULT_ACCENT: Accent = "black";
 
 function getAccent(): Accent {
   if (typeof window === "undefined") {

@@ -7,14 +7,10 @@ import {
 } from 'class-validator';
 import { TaskPriority, TaskStatus } from '../../generated/prisma/enums';
 
-export class CreateTaskDto {
+export class CreateSubtaskDto {
   @IsString()
   @MinLength(1)
   title: string;
-
-  @IsOptional()
-  @IsString()
-  description?: string;
 
   @IsOptional()
   @IsEnum(TaskStatus)
@@ -25,10 +21,10 @@ export class CreateTaskDto {
   priority?: TaskPriority;
 
   @IsOptional()
-  @IsDateString()
-  startDate?: string;
+  @IsString()
+  assigneeId?: string | null;
 
   @IsOptional()
   @IsDateString()
-  dueDate?: string;
+  dueDate?: string | null;
 }

@@ -1,3 +1,42 @@
+export type UserSummary = {
+	id: string;
+	name: string;
+	avatarUrl: string | null;
+};
+
+export type Subtask = {
+	id: string;
+	title: string;
+	status: "TODO" | "DOING" | "COMPLETED" | "ON_HOLD";
+	priority: "NONE" | "URGENT" | "HIGH" | "MEDIUM" | "LOW";
+	dueDate: string | null;
+	createdAt: string;
+	assignee: UserSummary | null;
+};
+
+export type CommentReply = {
+	id: string;
+	content: string;
+	createdAt: string;
+	author: UserSummary;
+};
+
+export type CommentItem = {
+	id: string;
+	content: string;
+	createdAt: string;
+	author: UserSummary;
+	replies?: CommentReply[];
+};
+
+export type TaskActivityItem = {
+	id: string;
+	message: string;
+	type?: string;
+	createdAt: string;
+	actor: UserSummary;
+};
+
 export type Task = {
 	id: string;
 	title: string;
@@ -6,16 +45,14 @@ export type Task = {
 	priority: "NONE" | "URGENT" | "HIGH" | "MEDIUM" | "LOW";
 	startDate: string | null;
 	dueDate: string | null;
-	assignee: {
-		id: string;
-		name: string;
-		avatarUrl: string | null;
-	} | null;
-	createdBy: {
-		id: string,
-		name: string,
-		avatarUrl: string | null,
-	},
+	labels?: string[];
+	isPrivate?: boolean;
+	assignee: UserSummary | null;
+	createdBy: UserSummary;
+	watchers?: UserSummary[];
+	subtasks?: Subtask[];
+	comments?: CommentItem[];
+	activities?: TaskActivityItem[];
 };
 
 export type TaskCol = {
@@ -37,9 +74,37 @@ export type TaskFieldState = Record<TaskField, boolean>;
 export type CreateTaskInput = {
 	title: string;
 	description?: string;
+	status?: Task["status"];
 	priority: "NONE" | "URGENT" | "HIGH" | "MEDIUM" | "LOW";
 	startDate?: string;
 	dueDate?: string;
+};
+
+export type UpdateTaskInput = {
+	title?: string;
+	description?: string | null;
+	status?: Task["status"];
+	priority?: Task["priority"];
+	assigneeId?: string | null;
+	startDate?: string | null;
+	dueDate?: string | null;
+	labels?: string[];
+	isPrivate?: boolean;
+};
+
+export type CreateSubtaskInput = {
+	title: string;
+	status?: Task["status"];
+	priority?: Task["priority"];
+	assigneeId?: string | null;
+	dueDate?: string | null;
+};
+
+export type UpdateSubtaskInput = Partial<CreateSubtaskInput>;
+
+export type CreateCommentInput = {
+	content: string;
+	parentId?: string;
 };
 
 export const taskPriorityLabels: Record<Task["priority"], string> = {
@@ -103,4 +168,20 @@ export function formatTaskDate(
 		month: "short",
 		...(format === "long" && { year: "numeric" }),
 	}).format(new Date(date));
+}
+
+export function formatRelativeTime(dateStr: string) {
+	if (!dateStr) return "";
+	const date = new Date(dateStr);
+	const now = new Date();
+	const diffMs = now.getTime() - date.getTime();
+	const diffSecs = Math.floor(diffMs / 1000);
+	if (diffSecs < 60) return "just now";
+	const diffMins = Math.floor(diffSecs / 60);
+	if (diffMins < 60) return `${diffMins}m ago`;
+	const diffHours = Math.floor(diffMins / 60);
+	if (diffHours < 24) return `${diffHours}h ago`;
+	const diffDays = Math.floor(diffHours / 24);
+	if (diffDays < 7) return `${diffDays}d ago`;
+	return formatTaskDate(dateStr, "short") || "";
 }

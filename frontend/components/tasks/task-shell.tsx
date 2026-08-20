@@ -13,6 +13,13 @@ export function TaskShell() {
 	const { setItems } = useBreadcrumbs();
 
 	useEffect(() => {
+		if (typeof window !== "undefined") {
+			const savedView = localStorage.getItem("pyramid_task_view");
+			if (savedView === "board" || savedView === "list") {
+				setView(savedView);
+			}
+		}
+
 		setItems([
 			{
 				label: "Tasks",
@@ -25,10 +32,17 @@ export function TaskShell() {
 		};
 	}, [setItems]);
 
+	function handleViewChange(nextView: TaskView) {
+		setView(nextView);
+		if (typeof window !== "undefined") {
+			localStorage.setItem("pyramid_task_view", nextView);
+		}
+	}
+
 	return (
 		<TasksProvider>
 			<div className="flex h-full min-h-0 flex-col p-2 gap-4">
-				<TaskHeader view={view} onViewChange={setView} />			
+				<TaskHeader view={view} onViewChange={handleViewChange} />			
 				<TaskContent view={view} />
 			</div>
 		</TasksProvider>

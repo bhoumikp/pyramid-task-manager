@@ -1,3 +1,5 @@
+"use client";
+
 import {
 	ChevronDown,
   	LucideIcon,
@@ -16,6 +18,8 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { cn } from "@/lib/utils"
 
 export function SidebarNavMain({
   items,
@@ -27,6 +31,8 @@ export function SidebarNavMain({
     isActive?: boolean
   }[]
 }) {
+  const pathname = usePathname();
+
   return (
     <SidebarGroup>
 		<Collapsible 
@@ -42,17 +48,24 @@ export function SidebarNavMain({
 		</CollapsibleTrigger>
 		<CollapsibleContent>
 			<SidebarMenu>
-				{items.map((item, index) => (
-					<SidebarMenuItem key={index}>
-						<SidebarMenuButton 
-							render={<Link href={item.url} />}
-							className="text-sidebar-accent-foreground"
-						>
-							{item.icon && <item.icon />}
-							<span>{item.title}</span>
-						</SidebarMenuButton>
-					</SidebarMenuItem>
-				))}
+				{items.map((item, index) => {
+					const active = item.isActive ?? (pathname === item.url || pathname.startsWith(item.url + "/"));
+					return (
+						<SidebarMenuItem key={index}>
+							<SidebarMenuButton 
+								isActive={active}
+								render={<Link href={item.url} />}
+								className={cn(
+									"text-sidebar-accent-foreground transition-colors",
+									active && "bg-sidebar-accent font-semibold text-sidebar-accent-foreground"
+								)}
+							>
+								{item.icon && <item.icon />}
+								<span>{item.title}</span>
+							</SidebarMenuButton>
+						</SidebarMenuItem>
+					);
+				})}
 			</SidebarMenu>
 		</CollapsibleContent>
 	  </Collapsible>

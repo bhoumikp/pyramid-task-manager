@@ -1,4 +1,4 @@
-import { ChevronDown, Ellipsis, Plus, Signal } from "lucide-react";
+import { ChevronDown, Ellipsis, Plus } from "lucide-react";
 import {
   Collapsible,
   CollapsibleContent,
@@ -15,7 +15,11 @@ import {
 } from "../ui/table";
 import { Button } from "../ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import Link from "next/link";
 import { formatTaskDate, Task, TaskCol, TaskFieldState } from "@/lib/tasks";
+import { MemberSelect } from "./member-select";
+import { PrioritySelect } from "./priority-select";
+import { useTasks } from "@/hooks/use-tasks";
 
 export function TaskTable({
   table,
@@ -24,6 +28,8 @@ export function TaskTable({
   table: TaskCol;
   visibleFields: TaskFieldState;
 }) {
+  const { members, updateExistingTask } = useTasks();
+
   const footerColSpan =
     2 +
     Number(visibleFields.priority) +
@@ -57,7 +63,6 @@ export function TaskTable({
                 {visibleFields.priority && <TableHead>Priority</TableHead>}
                 {visibleFields.members && <TableHead>Members</TableHead>}
                 {visibleFields.dueDate && <TableHead>Due Date</TableHead>}
-                {visibleFields.reporter && <TableHead>Reporter</TableHead>}
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -66,45 +71,45 @@ export function TaskTable({
               {table.tasks.map((task: Task) => (
                 <TableRow key={task.id}>
                   <TableCell className="max-w-0 px-3">
-                    <span className="block truncate">
+                    <Link
+                      href={`/tasks/${task.id}`}
+                      className="block truncate max-w-xs sm:max-w-md hover:underline"
+                      title={task.title}
+                    >
                       {task.title}
-                    </span>
+                    </Link>
                   </TableCell>
 
                   {visibleFields.priority && (
                     <TableCell>
-                      {task.priority !== "NONE" ? (
-                        <span className="flex gap-1 items-center text-xs">
-                          <Signal size={12} />
-                          {task.priority}
-                        </span>
-                      ) : (
-                        <span className="text-muted-foreground">
-                          No priority
-                        </span>
-                      )}
+                      <PrioritySelect
+                        priority={task.priority}
+                        onSelect={(p) => void updateExistingTask(task.id, { priority: p })}
+                      />
                     </TableCell>
                   )}
 
                   {visibleFields.members && (
                     <TableCell>
-                      {task.assignee ? (
-                        <div className="flex items-center gap-2">
-                          <Avatar className="h-8 w-8 rounded-lg">
-                            <AvatarImage
-                              src={task.assignee.avatarUrl ?? undefined}
-                              alt={task.assignee.name}
-                            />
-                            <AvatarFallback>
-                              {task.assignee.name.slice(0, 2).toUpperCase()}
-                            </AvatarFallback>
-                          </Avatar>
-                        </div>
-                      ) : (
-                        <span className="text-muted-foreground">
-                          Unassigned
-                        </span>
-                      )}
+                      <MemberSelect
+                        members={members}
+                        selectedMemberId={task.assignee?.id}
+                        onSelect={(assigneeId) => void updateExistingTask(task.id, { assigneeId })}
+                        trigger={
+                          <button type="button" className="flex items-center gap-2 text-xs cursor-pointer border-0 bg-transparent p-0">
+                            {task.assignee ? (
+                              <Avatar className="size-6 rounded-full">
+                                <AvatarImage src={task.assignee.avatarUrl ?? undefined} />
+                                <AvatarFallback>{task.assignee.name.slice(0, 1)}</AvatarFallback>
+                              </Avatar>
+                            ) : (
+                              <span className="size-6 inline-flex items-center justify-center rounded-full bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors">
+                                <Plus size={12} />
+                              </span>
+                            )}
+                          </button>
+                        }
+                      />
                     </TableCell>
                   )}
 
@@ -115,18 +120,6 @@ export function TaskTable({
                       ) : (
                         <span className="text-muted-foreground">
                           No date
-                        </span>
-                      )}
-                    </TableCell>
-                  )}
-
-                  {visibleFields.reporter && (
-                    <TableCell>
-                      {task.createdBy ? (
-                        <span>{task.createdBy.name}</span>
-                      ) : (
-                        <span className="text-muted-foreground">
-                          Unknown
                         </span>
                       )}
                     </TableCell>
