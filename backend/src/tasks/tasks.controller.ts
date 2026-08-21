@@ -38,10 +38,7 @@ export class TasksController {
   }
 
   @Get(':id')
-  getTask(
-    @CurrentUser() user: AuthenticatedUser,
-    @Param('id') taskId: string,
-  ) {
+  getTask(@CurrentUser() user: AuthenticatedUser, @Param('id') taskId: string) {
     return this.tasksService.findOne(user.userId, taskId);
   }
 
@@ -83,12 +80,7 @@ export class TasksController {
     @Param('subtaskId') subtaskId: string,
     @Body() dto: UpdateSubtaskDto,
   ) {
-    return this.tasksService.updateSubtask(
-      user.userId,
-      taskId,
-      subtaskId,
-      dto,
-    );
+    return this.tasksService.updateSubtask(user.userId, taskId, subtaskId, dto);
   }
 
   @Delete(':id/subtasks/:subtaskId')

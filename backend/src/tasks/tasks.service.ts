@@ -126,7 +126,7 @@ const taskSelect = {
 
 @Injectable()
 export class TasksService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async create(userId: string, dto: CreateTaskDto) {
     const workspaceId = await this.getUserWorkspace(userId);
@@ -226,13 +226,13 @@ export class TasksService {
     if (dto.assigneeId !== undefined) {
       data.assignee = dto.assigneeId
         ? {
-          connect: {
-            id: dto.assigneeId,
-          },
-        }
+            connect: {
+              id: dto.assigneeId,
+            },
+          }
         : {
-          disconnect: true,
-        };
+            disconnect: true,
+          };
 
       if (dto.assigneeId !== existing.assignee?.id) {
         if (dto.assigneeId) {
@@ -276,13 +276,13 @@ export class TasksService {
     if (dto.projectId !== undefined) {
       data.project = dto.projectId
         ? {
-          connect: {
-            id: dto.projectId,
-          },
-        }
+            connect: {
+              id: dto.projectId,
+            },
+          }
         : {
-          disconnect: true,
-        };
+            disconnect: true,
+          };
     }
 
     await this.prisma.task.update({
@@ -404,11 +404,7 @@ export class TasksService {
     return updated;
   }
 
-  async deleteSubtask(
-    userId: string,
-    taskId: string,
-    subtaskId: string,
-  ) {
+  async deleteSubtask(userId: string, taskId: string, subtaskId: string) {
     await this.findOne(userId, taskId);
 
     const subtask = await this.prisma.subtask.findFirst({
@@ -467,11 +463,7 @@ export class TasksService {
     return comment;
   }
 
-  async deleteComment(
-    userId: string,
-    taskId: string,
-    commentId: string,
-  ) {
+  async deleteComment(userId: string, taskId: string, commentId: string) {
     await this.findOne(userId, taskId);
 
     const comment = await this.prisma.comment.findFirst({
