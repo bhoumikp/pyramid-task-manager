@@ -5,6 +5,7 @@ import { UpdateTaskDto } from './dto/update-task.dto';
 import { CreateSubtaskDto } from './dto/create-subtask.dto';
 import { UpdateSubtaskDto } from './dto/update-subtask.dto';
 import { CreateCommentDto } from './dto/create-comment.dto';
+import { Prisma } from '../generated/prisma/client';
 
 const taskSelect = {
   id: true,
@@ -125,7 +126,7 @@ const taskSelect = {
 
 @Injectable()
 export class TasksService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async create(userId: string, dto: CreateTaskDto) {
     const workspaceId = await this.getUserWorkspace(userId);
@@ -192,7 +193,7 @@ export class TasksService {
   async update(userId: string, taskId: string, dto: UpdateTaskDto) {
     const existing = await this.findOne(userId, taskId);
 
-    const data: Record<string, any> = {};
+    const data: Prisma.TaskUpdateInput = {};
     const activityMessages: string[] = [];
 
     if (dto.title !== undefined && dto.title !== existing.title) {
@@ -223,12 +224,24 @@ export class TasksService {
     }
 
     if (dto.assigneeId !== undefined) {
-      data.assigneeId = dto.assigneeId;
+      data.assignee = dto.assigneeId
+        ? {
+          connect: {
+            id: dto.assigneeId,
+          },
+        }
+        : {
+          disconnect: true,
+        };
+
       if (dto.assigneeId !== existing.assignee?.id) {
         if (dto.assigneeId) {
           const newAssignee = await this.prisma.user.findUnique({
-            where: { id: dto.assigneeId },
+            where: {
+              id: dto.assigneeId,
+            },
           });
+
           activityMessages.push(
             `assigned task to ${newAssignee?.name ?? 'a member'}`,
           );
@@ -261,7 +274,15 @@ export class TasksService {
     }
 
     if (dto.projectId !== undefined) {
-      data.projectId = dto.projectId;
+      data.project = dto.projectId
+        ? {
+          connect: {
+            id: dto.projectId,
+          },
+        }
+        : {
+          disconnect: true,
+        };
     }
 
     await this.prisma.task.update({
@@ -356,8 +377,21 @@ export class TasksService {
   ) {
     await this.findOne(userId, taskId);
 
+    const subtask = await this.prisma.subtask.findFirst({
+      where: {
+        id: subtaskId,
+        taskId,
+      },
+    });
+
+    if (!subtask) {
+      throw new NotFoundException('Subtask not found');
+    }
+
     const updated = await this.prisma.subtask.update({
-      where: { id: subtaskId },
+      where: {
+        id: subtaskId,
+      },
       data: {
         title: dto.title,
         status: dto.status,
@@ -370,11 +404,30 @@ export class TasksService {
     return updated;
   }
 
-  async deleteSubtask(userId: string, taskId: string, subtaskId: string) {
+  async deleteSubtask(
+    userId: string,
+    taskId: string,
+    subtaskId: string,
+  ) {
     await this.findOne(userId, taskId);
-    await this.prisma.subtask.delete({
-      where: { id: subtaskId },
+
+    const subtask = await this.prisma.subtask.findFirst({
+      where: {
+        id: subtaskId,
+        taskId,
+      },
     });
+
+    if (!subtask) {
+      throw new NotFoundException('Subtask not found');
+    }
+
+    await this.prisma.subtask.delete({
+      where: {
+        id: subtaskId,
+      },
+    });
+
     return { success: true };
   }
 
@@ -414,11 +467,30 @@ export class TasksService {
     return comment;
   }
 
-  async deleteComment(userId: string, taskId: string, commentId: string) {
+  async deleteComment(
+    userId: string,
+    taskId: string,
+    commentId: string,
+  ) {
     await this.findOne(userId, taskId);
-    await this.prisma.comment.delete({
-      where: { id: commentId },
+
+    const comment = await this.prisma.comment.findFirst({
+      where: {
+        id: commentId,
+        taskId,
+      },
     });
+
+    if (!comment) {
+      throw new NotFoundException('Comment not found');
+    }
+
+    await this.prisma.comment.delete({
+      where: {
+        id: commentId,
+      },
+    });
+
     return { success: true };
   }
 
@@ -441,36 +513,18 @@ export class TasksService {
 
   private async getUserWorkspace(userId: string): Promise<string> {
     const membership = await this.prisma.workspaceMember.findFirst({
-      where: { userId },
-    });
-
-    if (membership) {
-      return membership.workspaceId;
-    }
-
-    const defaultWorkspace = await this.prisma.workspace.findFirst();
-    if (defaultWorkspace) {
-      await this.prisma.workspaceMember.create({
-        data: {
-          userId,
-          workspaceId: defaultWorkspace.id,
-        },
-      }).catch(() => {});
-      return defaultWorkspace.id;
-    }
-
-    const user = await this.prisma.user.findUnique({ where: { id: userId } });
-    const newWorkspace = await this.prisma.workspace.create({
-      data: {
-        name: `${user?.name ?? 'User'}'s Workspace`,
-        members: {
-          create: {
-            userId,
-          },
-        },
+      where: {
+        userId,
+      },
+      select: {
+        workspaceId: true,
       },
     });
 
-    return newWorkspace.id;
+    if (!membership) {
+      throw new NotFoundException('Workspace not found');
+    }
+
+    return membership.workspaceId;
   }
 }

@@ -33,7 +33,7 @@ export function SettingsSidebar() {
 		<aside className="w-64 border-r border-border bg-sidebar flex flex-col shrink-0 h-screen">
 			{/* Back to app */}
 			<header className="p-2">
-				<Link href="/tasks" className="flex items-center gap-2 px-3 py-2 text-sm text-primary hover:bg-accent rounded-lg">
+				<Link href="/tasks" className="flex items-center gap-2 px-3 py-2 text-sm text-primary hover:bg-accent rounded-lg font-medium">
 					<ArrowLeft size={16} />
 					<span>Back to app</span>
 				</Link>
@@ -60,7 +60,9 @@ export function SettingsSidebar() {
 								href={item.href}
 								className={cn(
 									"flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-xl transition-colors",
-									isActive ? "bg-accent text-accent-foreground" : "hover:text-foreground hover:bg-accent"
+									isActive
+										? "bg-primary/10 text-primary font-semibold"
+										: "hover:text-foreground hover:bg-accent"
 								)}
 							>
 								{item.isColor ? (

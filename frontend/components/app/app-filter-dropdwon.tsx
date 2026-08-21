@@ -3,11 +3,9 @@
 import { Button } from "../ui/button";
 import {
 	Calendar,
-	CheckCircle2,
 	Circle,
 	Dot,
 	Funnel,
-	ListTodo,
 	RotateCcw,
 	Signal,
 	SignalHigh,
@@ -15,7 +13,6 @@ import {
 	SignalMedium,
 	Tag,
 	User,
-	UserCheck,
 	Users,
 } from "lucide-react";
 import {
@@ -98,10 +95,16 @@ export function AppFilterDropdown() {
 		<DropdownMenu>
 			<DropdownMenuTrigger
 				render={
-					<Button variant="outline" className="relative px-2 rounded text-xs gap-1.5 cursor-pointer">
+					<Button
+						variant="outline"
+						className={cn(
+							"relative px-2 rounded text-xs gap-1.5 cursor-pointer",
+							totalActiveFilters > 0 && "bg-primary/10 text-primary border-primary/30 font-medium"
+						)}
+					>
 						<Funnel className="size-3.5" />
 						{totalActiveFilters > 0 && (
-							<Badge variant="secondary" className="h-4 px-1 text-xs min-w-4 rounded-full justify-center">
+							<Badge variant="default" className="h-4 px-1 text-[10px] min-w-4 rounded-full justify-center">
 								{totalActiveFilters}
 							</Badge>
 						)}
@@ -307,10 +310,10 @@ export function AppFilterDropdown() {
 						<>
 							<DropdownMenuSeparator />
 							<DropdownMenuItem
-								className="py-2 px-3 gap-2 cursor-pointer text-destructive focus:text-destructive"
+								className="py-2 px-3 gap-2 cursor-pointer text-destructive focus:text-destructive text-xs"
 								onClick={clearAllFilters}
 							>
-								<RotateCcw className="size-4" />
+								<RotateCcw className="size-3.5" />
 								<span>Reset All Filters</span>
 							</DropdownMenuItem>
 						</>

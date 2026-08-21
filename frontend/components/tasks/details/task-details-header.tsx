@@ -12,8 +12,6 @@ import {
 
 import type { Task } from "@/lib/tasks";
 import { Button } from "../../ui/button";
-import { Input } from "../../ui/input";
-import { Textarea } from "@/components/ui/textarea";
 
 interface TaskDetailsHeaderProps {
 	task: Task;
@@ -157,7 +155,7 @@ export function TaskDetailsHeader({
 					variant="outline"
 					size="lg"
 					className={`rounded px-3 text-xs cursor-pointer transition-colors gap-1.5 ${isWatching
-						? "bg-blue-500/10 text-blue-600 border-blue-500/30 dark:text-blue-400 font-medium"
+						? "bg-primary/10 text-primary border-primary/30 font-medium"
 						: "text-muted-foreground hover:text-foreground"
 						}`}
 					onClick={onToggleWatch}

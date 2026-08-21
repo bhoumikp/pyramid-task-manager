@@ -1,3 +1,4 @@
+import { CreateProjectInput } from "./projects";
 import {
 	CreateCommentInput,
 	CreateSubtaskInput,
@@ -258,7 +259,7 @@ export async function getProjects() {
 	return response.json();
 }
 
-export async function createProjectApi(data: any) {
+export async function createProjectApi(data: CreateProjectInput) {
 	const response = await fetch(`${API_URL}/projects`, {
 		method: "POST",
 		credentials: "include",
@@ -275,7 +276,7 @@ export async function createProjectApi(data: any) {
 	return response.json();
 }
 
-export async function updateProjectApi(projectId: string, data: any) {
+export async function updateProjectApi(projectId: string, data: CreateProjectInput) {
 	const response = await fetch(`${API_URL}/projects/${projectId}`, {
 		method: "PATCH",
 		credentials: "include",

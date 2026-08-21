@@ -29,6 +29,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Badge } from "../ui/badge";
 import { useProjects } from "@/hooks/use-projects";
+import { cn } from "@/lib/utils";
 
 export function ProjectFilterDropdown() {
 	const {
@@ -67,10 +68,16 @@ export function ProjectFilterDropdown() {
 		<DropdownMenu>
 			<DropdownMenuTrigger
 				render={
-					<Button variant="outline" className="relative px-2 rounded text-xs gap-1.5 cursor-pointer">
+					<Button
+						variant="outline"
+						className={cn(
+							"relative px-2 rounded text-xs gap-1.5 cursor-pointer",
+							totalActiveFilters > 0 && "bg-primary/10 text-primary border-primary/30 font-medium"
+						)}
+					>
 						<Funnel className="size-3.5" />
 						{totalActiveFilters > 0 && (
-							<Badge variant="secondary" className="h-4 px-1 text-xs min-w-4 rounded-full justify-center">
+							<Badge variant="default" className="h-4 px-1 text-[10px] min-w-4 rounded-full justify-center">
 								{totalActiveFilters}
 							</Badge>
 						)}
