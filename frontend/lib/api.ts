@@ -1,4 +1,4 @@
-import { CreateProjectInput } from "./projects";
+import { CreateProjectInput, Project } from "./projects";
 import {
 	CreateCommentInput,
 	CreateSubtaskInput,
@@ -276,7 +276,7 @@ export async function createProjectApi(data: CreateProjectInput) {
 	return response.json();
 }
 
-export async function updateProjectApi(projectId: string, data: CreateProjectInput) {
+export async function updateProjectApi(projectId: string, data: Partial<Project> & { leadId?: string | null }) {
 	const response = await fetch(`${API_URL}/projects/${projectId}`, {
 		method: "PATCH",
 		credentials: "include",
