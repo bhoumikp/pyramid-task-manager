@@ -173,6 +173,13 @@
   --sidebar-accent-foreground: var(--primary);
 }
 
+.dark[data-accent="black"],
+.dark [data-accent="black"] {
+  --primary: #ffffff;
+  --primary-foreground: #171717;
+  --sidebar-accent-foreground: var(--primary);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

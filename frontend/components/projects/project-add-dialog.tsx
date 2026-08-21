@@ -13,37 +13,34 @@ import {
 } from "../ui/dialog";
 import { ProjectForm } from "./project-form";
 import { DialogTriggerProps } from "@base-ui/react";
-import { ProjectsProvider } from "@/contexts/projects-context";
 
 export function ProjectAddDialog({ trigger, nativeButton }: { trigger?: React.ReactNode, nativeButton?: boolean }) {
 	const [open, setOpen] = useState(false);
 
 	return (
-		<ProjectsProvider>
-			<Dialog open={open} onOpenChange={setOpen}>
-				<DialogTrigger
-					nativeButton={nativeButton}
-					render={
-						(trigger || (
-							<Button className="text-xs">
-								<Plus size={14} />
-								Add Project
-							</Button>
-						)) as React.ReactElement<DialogTriggerProps>
-					}
-				/>
+		<Dialog open={open} onOpenChange={setOpen}>
+			<DialogTrigger
+				nativeButton={nativeButton}
+				render={
+					(trigger || (
+						<Button className="text-xs">
+							<Plus size={14} />
+							Add Project
+						</Button>
+					)) as React.ReactElement<DialogTriggerProps>
+				}
+			/>
 
-				<DialogContent className="max-w-md p-6 rounded-lg">
-					<DialogHeader>
-						<DialogTitle className="text-base font-semibold">Create New Project</DialogTitle>
-						<DialogDescription className="text-xs text-muted-foreground">
-							Set up a new project workspace with lead assignment and timeline.
-						</DialogDescription>
-					</DialogHeader>
+			<DialogContent className="max-w-md p-6 rounded-lg">
+				<DialogHeader>
+					<DialogTitle className="text-base font-semibold">Create New Project</DialogTitle>
+					<DialogDescription className="text-xs text-muted-foreground">
+						Set up a new project workspace with lead assignment and timeline.
+					</DialogDescription>
+				</DialogHeader>
 
-					<ProjectForm onSuccess={() => setOpen(false)} />
-				</DialogContent>
-			</Dialog>
-		</ProjectsProvider>
+				<ProjectForm onSuccess={() => setOpen(false)} />
+			</DialogContent>
+		</Dialog>
 	);
 }

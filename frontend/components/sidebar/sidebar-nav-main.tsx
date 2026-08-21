@@ -20,10 +20,9 @@ import {
 	SidebarMenuSubButton,
 	SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
-import { getProjects } from "@/lib/api";
-import { type Project } from "@/lib/projects";
 import { cn } from "@/lib/utils";
 import { ProjectAddDialog } from "@/components/projects/project-add-dialog";
+import { useProjects } from "@/hooks/use-projects";
 
 export function SidebarNavMain({
 	items,
@@ -36,28 +35,13 @@ export function SidebarNavMain({
 	}[];
 }) {
 	const pathname = usePathname();
-	const [projects, setProjects] = useState<Project[]>([]);
+	const { projects } = useProjects();
 	const [openProjects, setOpenProjects] = useState(true);
 
 	useEffect(() => {
 		if (pathname.startsWith("/projects")) {
 			setOpenProjects(true);
 		}
-	}, [pathname]);
-
-	useEffect(() => {
-		async function fetchProjects() {
-			try {
-				const data = await getProjects();
-				if (Array.isArray(data)) {
-					setProjects(data);
-				}
-			} catch (e) {
-				console.warn("Could not fetch remote projects for sidebar", e);
-			}
-		}
-
-		void fetchProjects();
 	}, [pathname]);
 
 	return (

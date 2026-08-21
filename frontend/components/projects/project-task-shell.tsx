@@ -8,7 +8,6 @@ import { TaskView } from "../tasks/task-shell";
 import { TasksProvider } from "@/contexts/tasks-context";
 import { useProjects } from "@/hooks/use-projects";
 import { useBreadcrumbs } from "@/hooks/use-breadcrumbs";
-import { ProjectsProvider } from "@/contexts/projects-context";
 import { Skeleton } from "@/components/ui/skeleton";
 
 function ProjectTaskContent({ projectId }: { projectId: string }) {
@@ -75,9 +74,5 @@ function ProjectTaskContent({ projectId }: { projectId: string }) {
 }
 
 export function ProjectTaskShell({ projectId }: { projectId: string }) {
-	return (
-		<ProjectsProvider>
-			<ProjectTaskContent projectId={projectId} />
-		</ProjectsProvider>
-	);
+	return <ProjectTaskContent projectId={projectId} />;
 }

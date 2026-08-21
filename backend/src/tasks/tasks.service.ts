@@ -439,17 +439,38 @@ export class TasksService {
     return members.map((m) => m.user);
   }
 
-  private async getUserWorkspace(userId: string) {
+  private async getUserWorkspace(userId: string): Promise<string> {
     const membership = await this.prisma.workspaceMember.findFirst({
-      where: {
-        userId,
+      where: { userId },
+    });
+
+    if (membership) {
+      return membership.workspaceId;
+    }
+
+    const defaultWorkspace = await this.prisma.workspace.findFirst();
+    if (defaultWorkspace) {
+      await this.prisma.workspaceMember.create({
+        data: {
+          userId,
+          workspaceId: defaultWorkspace.id,
+        },
+      }).catch(() => {});
+      return defaultWorkspace.id;
+    }
+
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    const newWorkspace = await this.prisma.workspace.create({
+      data: {
+        name: `${user?.name ?? 'User'}'s Workspace`,
+        members: {
+          create: {
+            userId,
+          },
+        },
       },
     });
 
-    if (!membership) {
-      throw new NotFoundException('Workspace not found');
-    }
-
-    return membership.workspaceId;
+    return newWorkspace.id;
   }
 }

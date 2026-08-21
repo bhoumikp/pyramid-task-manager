@@ -3,7 +3,7 @@
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { ArrowRight, CalendarIcon } from "lucide-react";
+import { ArrowRight, CalendarIcon, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { parseISO } from "date-fns/parseISO";
 import { useState } from "react";
@@ -75,7 +75,7 @@ export function ProjectForm({ onSuccess }: ProjectFormProps) {
 	const startDateValue = watch("startDate");
 	const dueDateValue = watch("dueDate");
 
-	const onSubmit = (data: ProjectFormValues) => {
+	const onSubmit = async (data: ProjectFormValues) => {
 		const payload: CreateProjectInput = {
 			title: data.title,
 			description: data.description || undefined,
@@ -85,7 +85,7 @@ export function ProjectForm({ onSuccess }: ProjectFormProps) {
 			dueDate: data.dueDate || null,
 		};
 
-		createProject(payload);
+		await createProject(payload);
 		onSuccess?.();
 	};
 
@@ -243,7 +243,14 @@ export function ProjectForm({ onSuccess }: ProjectFormProps) {
 
 			<div className="flex justify-end gap-2 pt-2">
 				<Button type="submit" size="sm" disabled={isSubmitting} className="rounded text-xs">
-					Create Project
+					{isSubmitting ? (
+						<>
+							<Loader2 className="size-3.5 animate-spin mr-1" />
+							Creating...
+						</>
+					) : (
+						"Create Project"
+					)}
 				</Button>
 			</div>
 		</form>

@@ -129,7 +129,7 @@ export function SidebarNavUser({
 							</DropdownMenuSub>
 							<DropdownMenuSub>
 								<DropdownMenuSubTrigger className={"py-2 px-3 gap-2.5"}>
-									<div className="size-4 bg-black rounded-xs"></div>
+									<div className="size-4 bg-primary rounded-xs" data-accent={accent}></div>
 									Color Mode
 								</DropdownMenuSubTrigger>
 								<DropdownMenuPortal>
@@ -185,7 +185,8 @@ export function SidebarNavUser({
 													value="black"
 												>
 													<div className="size-4 bg-primary rounded-xs" data-accent="black"></div>
-													Black
+													<span className="dark:hidden">Black</span>
+													<span className="hidden dark:inline">White</span>
 												</DropdownMenuRadioItem>
 											</DropdownMenuRadioGroup>
 										</DropdownMenuGroup>

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from '@nestjs/passport';
 import type { Request, Response } from 'express';
@@ -75,5 +75,42 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   getCurrentUser(@CurrentUser() user: AuthenticatedUser) {
     return this.authService.getCurrentUser(user.userId);
+  }
+
+  @Patch('me')
+  @UseGuards(JwtAuthGuard)
+  updateProfile(
+    @CurrentUser() user: AuthenticatedUser,
+    @Body()
+    body: {
+      name?: string;
+      username?: string;
+      email?: string;
+      title?: string;
+      avatarUrl?: string;
+    },
+  ) {
+    return this.authService.updateProfile(user.userId, body);
+  }
+
+  @Post('logout')
+  logout(@Res({ passthrough: true }) response: Response) {
+    response.clearCookie('access_token', {
+      path: '/',
+    });
+    return { success: true };
+  }
+
+  @Post('leave-workspace')
+  @UseGuards(JwtAuthGuard)
+  async leaveWorkspace(
+    @CurrentUser() user: AuthenticatedUser,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    await this.authService.leaveWorkspace(user.userId);
+    response.clearCookie('access_token', {
+      path: '/',
+    });
+    return { success: true };
   }
 }

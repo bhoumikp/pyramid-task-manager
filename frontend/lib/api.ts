@@ -36,6 +36,56 @@ export async function getCurrentUser() {
 	return response.json();
 }
 
+export async function updateProfileApi(data: {
+	name?: string;
+	username?: string;
+	email?: string;
+	title?: string;
+	avatarUrl?: string;
+}) {
+	const response = await fetch(`${API_URL}/auth/me`, {
+		method: "PATCH",
+		credentials: "include",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(data),
+	});
+
+	if (!response.ok) {
+		const err = await response.json().catch(() => ({}));
+		throw new Error(err.message || "Failed to update profile");
+	}
+
+	return response.json();
+}
+
+export async function logoutApi() {
+	const response = await fetch(`${API_URL}/auth/logout`, {
+		method: "POST",
+		credentials: "include",
+	});
+
+	if (!response.ok) {
+		throw new Error("Failed to logout");
+	}
+
+	return response.json();
+}
+
+export async function leaveWorkspaceApi() {
+	const response = await fetch(`${API_URL}/auth/leave-workspace`, {
+		method: "POST",
+		credentials: "include",
+	});
+
+	if (!response.ok) {
+		throw new Error("Failed to leave workspace");
+	}
+
+	return response.json();
+}
+
 export async function getTasks(): Promise<Task[]> {
 	const response = await fetch(`${API_URL}/tasks`, {
 		credentials: "include",

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { randomUUID } from 'node:crypto';
 import { PrismaService } from '../prisma/prisma.service';
@@ -8,7 +8,7 @@ export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
-  ) { }
+  ) {}
 
   async validateGoogleUser(googleUser: {
     googleId: string;
@@ -41,6 +41,22 @@ export class AuthService {
       await this.prisma.workspaceMember.create({
         data: { userId: user.id, workspaceId: workspace.id },
       });
+    } else {
+      const membership = await this.prisma.workspaceMember.findFirst({
+        where: { userId: user.id },
+      });
+
+      if (!membership) {
+        let defaultWorkspace = await this.prisma.workspace.findFirst();
+        if (!defaultWorkspace) {
+          defaultWorkspace = await this.prisma.workspace.create({
+            data: { name: `${user.name}'s Workspace` },
+          });
+        }
+        await this.prisma.workspaceMember.create({
+          data: { userId: user.id, workspaceId: defaultWorkspace.id },
+        });
+      }
     }
 
     const accessToken = this.jwtService.sign({ sub: user.id });
@@ -68,8 +84,7 @@ export class AuthService {
             },
           };
         }
-      } catch {
-      }
+      } catch {}
     }
 
     const user = await this.prisma.user.create({
@@ -120,6 +135,66 @@ export class AuthService {
         avatarUrl: true,
         title: true,
       },
+    });
+  }
+
+  async updateProfile(
+    userId: string,
+    dto: {
+      name?: string;
+      username?: string;
+      email?: string;
+      title?: string;
+      avatarUrl?: string;
+    },
+  ) {
+    if (dto.username) {
+      const existingUsername = await this.prisma.user.findFirst({
+        where: {
+          username: dto.username,
+          id: { not: userId },
+        },
+      });
+      if (existingUsername) {
+        throw new BadRequestException('Username is already taken');
+      }
+    }
+
+    if (dto.email) {
+      const existingEmail = await this.prisma.user.findFirst({
+        where: {
+          email: dto.email,
+          id: { not: userId },
+        },
+      });
+      if (existingEmail) {
+        throw new BadRequestException('Email is already in use');
+      }
+    }
+
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        ...(dto.name !== undefined && { name: dto.name }),
+        ...(dto.username !== undefined && { username: dto.username }),
+        ...(dto.email !== undefined && { email: dto.email }),
+        ...(dto.title !== undefined && { title: dto.title }),
+        ...(dto.avatarUrl !== undefined && { avatarUrl: dto.avatarUrl }),
+      },
+      select: {
+        id: true,
+        name: true,
+        username: true,
+        email: true,
+        avatarUrl: true,
+        title: true,
+      },
+    });
+  }
+
+  async leaveWorkspace(userId: string) {
+    await this.prisma.workspaceMember.deleteMany({
+      where: { userId },
     });
   }
 

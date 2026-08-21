@@ -24,6 +24,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 				} else {
 					document.documentElement.classList.remove("dark");
 				}
+			} else if (document.documentElement.classList.contains("dark")) {
+				setThemeState("dark");
 			}
 		}
 	}, []);
